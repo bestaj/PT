@@ -12,7 +12,7 @@ public class ZpracujObjednavky {
 
 	private ArrayList<Objednavka> objednavky;
 	private final int INF = 9999;
-	private final int CAS_V_JEDNEM_MESTE = 30;
+	private final int CAS_V_JEDNOM_MESTE = 1800;
 	private final int KONEC_DNE = 72000;
 	private int pocetPalet;
 	private int potrebujemePalet;
@@ -108,7 +108,7 @@ public class ZpracujObjednavky {
 						nakladak.setKolikUjel(Model.getInstance().nejkratsiCesty[pocatek][indexMesta]);
 						nakladNaJednoAuto += naklad;
 						this.naklad += naklad;
-						casUjedeJednoAuto += (kolikCasuPotreba + CAS_V_JEDNEM_MESTE);
+						casUjedeJednoAuto += (kolikCasuPotreba + CAS_V_JEDNOM_MESTE);
 						nakladak.setKolikUjelCasu(casUjedeJednoAuto + cas);
 						pocatek = indexMesta;
 						pocetPalet -= pomocne.get(this.aktualniIndex).getPalet();
@@ -128,7 +128,7 @@ public class ZpracujObjednavky {
 								objednavky.get((int) kandidatiNaObjednavku.get(aktualniIndex)));
 						
 						mc.pridejObjednavku(objednavky.get((int) kandidatiNaObjednavku.get(aktualniIndex)), true);
-						
+						Model.getInstance().dorucovaneObjednavky.add(objednavky.get((int) kandidatiNaObjednavku.get(aktualniIndex)));
 						objednavky.remove((int) kandidatiNaObjednavku.get(aktualniIndex));
 						cisloObjednavky++;
 						if (objednavky.isEmpty()) {
@@ -149,7 +149,7 @@ public class ZpracujObjednavky {
 					naklad = (Model.getInstance().nejkratsiCesty[pocatek][indexMesta]) * 25;
 					nakladNaJednoAuto += naklad;
 					this.naklad += naklad;
-					casUjedeJednoAuto += (kolikCasuPotreba + CAS_V_JEDNEM_MESTE);
+					casUjedeJednoAuto += (kolikCasuPotreba + CAS_V_JEDNOM_MESTE);
 					nakladak.setKolikUjelCasu(casUjedeJednoAuto + cas);
 					pocatek = indexMesta;
 					pocetPalet -= objednavky.get(this.aktualniIndex).getPalet();
@@ -165,6 +165,7 @@ public class ZpracujObjednavky {
 					
 					nakladak.setObjednavkyCoVeze(cisloObjednavky);
 					zpracovaneObjednavky.put(cisloObjednavky, objednavky.get(aktualniIndex));
+					Model.getInstance().dorucovaneObjednavky.add(objednavky.get(aktualniIndex));
 					objednavky.remove(this.aktualniIndex);
 					cisloObjednavky++;
 					if (objednavky.isEmpty()) {

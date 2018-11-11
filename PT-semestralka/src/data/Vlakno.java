@@ -17,7 +17,7 @@ public class Vlakno implements Runnable {
  
     @Override
     public void run() {
-    	 randomX = (long)(Math.log(1 - rng.nextDouble()) / (-1.0/300.0)) * 1000;
+    	 randomX = (long)(Math.log(1 - rng.nextDouble()) / (-1.0/2.5)) * 1000;
     	 while (true) {
 	        if (Thread.interrupted()) {
 	          break;
@@ -26,7 +26,7 @@ public class Vlakno implements Runnable {
         	try {
         		Thread.sleep(randomX);
         		mc.generujObjednavky(1);
-        		randomX = (long)(Math.log(1 - rng.nextDouble()) / (-1.0/300.0)) * 1000;
+        		randomX = (long)(Math.log(1 - rng.nextDouble()) / (-1.0/2.5)) * 1000;
     	   
         	} catch (InterruptedException ex) {
         		return;

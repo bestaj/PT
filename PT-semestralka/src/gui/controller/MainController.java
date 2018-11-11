@@ -5,19 +5,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import java.net.URL;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.Scanner;
 import java.util.TimeZone;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane.IconifyAction;
-
-import com.sun.org.apache.bcel.internal.generic.NEW;
 
 import data.Dispetcher;
 import data.Mesto;
@@ -87,7 +80,9 @@ public class MainController implements Initializable {
 	public static final Image pauseImg = new Image("/gui/icons/pause.png");
 	public static final Image stopImg = new Image("/gui/icons/stop.png");
 	
-	private final long CAS = 21600000;
+	private final long KONEC_DNE = 73800000;
+	private final long KONEC_OBJEDNAVEK = 57600000;
+	private final long CAS = 28800000;
 	public Random rng = new Random();
 	private final int INF = 9999;
 	/** Aktualni simulacni cas */
@@ -105,6 +100,8 @@ public class MainController implements Initializable {
 	private Timeline timeline;
 	private Timeline timeline2;
 	
+	private ArrayList<Objednavka> dorucovaneObjednavky;
+	private ArrayList<Label> nedoruceneObjLbl;
 	private boolean beziSimulace = false;
 	private boolean poSpusteni = false;
 	private boolean prislaObjednavka = false;
@@ -130,87 +127,14 @@ public class MainController implements Initializable {
 		
 		Model.getInstance().nejkratsiCesty = Model.getInstance().disp.floydAlg(vzd, 0); 
 		Model.getInstance().nejrychlejsiCesty = Model.getInstance().disp.floydAlg(cas, 1); 
-		Model.getInstance().objednavkyList = new ArrayList<>();
+		Model.getInstance().nezpracovaneObjednavky = new ArrayList<>();
+		Model.getInstance().dorucovaneObjednavky = new ArrayList<>();
+		dorucovaneObjednavky = Model.getInstance().dorucovaneObjednavky;
+		nedoruceneObjLbl = new ArrayList<>();
 		inicializaceGUI();
 		time = CAS;
 		Main.window.setOnCloseRequest(confirmCloseEventHandler);
 		
-		
-		/*
-		int maxCas = 0;
-		int maxVzd = 0;
-		for (int i = 0; i < Model.getInstance().pocetMest; i++) {
-			for (int j = 0; j < Model.getInstance().pocetMest; j++) {
-				if (maxCas < Model.getInstance().nejrychlejsiCesty[i][j]) {
-					maxCas = Model.getInstance().nejrychlejsiCesty[i][j];
-				}
-			}
-		}
-		System.out.println(setTime(maxCas*1000));
-		
-		for (int i = 0; i < Model.getInstance().pocetMest; i++) {
-			for (int j = 0; j < Model.getInstance().pocetMest; j++) {
-				if (maxVzd < Model.getInstance().nejkratsiCesty[i][j]) {
-					maxVzd = Model.getInstance().nejkratsiCesty[i][j];
-				}
-			}
-		}
-		System.out.println(maxVzd);
-		
-		/*
-		for (int i = 0; i < 100; i++) {
-			System.out.println("Nejkratsi cesta do mesta " + i + " vede pres mesta " + Model.getInstance().disp.cesta(0, i, 0) + " a je dlouha " +
-			Model.getInstance().nejkratsiCesty[0][i]);
-			System.out.println("Nejrychlejsi cesta do mesta " + i + " vede pres mesta " + Model.getInstance().disp.cesta(0, i, 1) + " a trva " +
-			setTime(Model.getInstance().nejrychlejsiCesty[0][i] * 1000));
-			System.out.println();
-		}
-		/*
-		for (int i = 0; i < 50; i++) {
-			for (int j = 0; j < 50; j++) {
-				System.out.print(Model.getInstance().vzdalenosti[i][j] + " ");
-			}
-			System.out.println();
-			
-		}
-		
-		System.out.println();
-		for (int i = 0; i < 100; i++) {
-			for (int j = 0; j < 100; j++) {
-				System.out.print(Model.getInstance().nejkratsiCesty[i][j] + " ");
-			}
-			System.out.println();
-			
-		}
-		
-		
-		System.out.println();
-		for (int i = 0; i < 100; i++) {
-			for (int j = 0; j < 100; j++) {
-				System.out.print(Model.getInstance().nejrychlejsiCesty[i][j] + " ");
-			}
-			System.out.println();
-			
-		}
-		/*
-		for (int i = 0; i < 100; i++) {
-			ArrayList<Integer> cesta = Model.getInstance().disp.cesta(0, i);
-			System.out.println(cesta);
-		}
-		
-		for (int i = 0; i < 100; i++) {
-			
-			System.out.println(Model.getInstance().disp.trvaniCesty(0, i));
-		}
-		
-		
-		
-		for (int i = 0; i < 50; i++) {
-			for (int j = 0; j < 50; j++) {
-				System.out.println(Model.getInstance().casy[1816][1912]);
-			}
-		}
-		*/
 	}
 
 	public void nacteniVstupnichDat() {
@@ -317,6 +241,7 @@ public class MainController implements Initializable {
 			pozastavitMI.setDisable(false);
 			ukoncitBtn.setDisable(false);
 			ukoncitMI.setDisable(false);
+			
 			startTime = System.currentTimeMillis();
 			vypisTA.appendText("Simulace spuštìna.\n\n");
 			timeline = new Timeline(
@@ -325,33 +250,71 @@ public class MainController implements Initializable {
 			          		@Override 
 			          		public void handle(ActionEvent actionEvent) {
 			          			if (beziSimulace) {
-			          				time = (CAS + ((System.currentTimeMillis() - startTime) - (casSpusteni - casPozastaveni)) * 6);
+			          				time = (CAS + ((System.currentTimeMillis() - startTime) - (casSpusteni - casPozastaveni)) * 120);
 			    		            zpracujOb.setCas((int)(time/1000));
 			          				timeLbl.setText(setTime(time));
+			          				
+			          				if (prislaObjednavka == true) {
+			          					zpracujOb.zpracujObjednavky();
+			          					prislaObjednavka = false;
+			          				}
+			          				
+			          				if (time > KONEC_DNE) {
+			          					ukoncitSimulaci();
+			          				}
+			          				if (time > 	KONEC_OBJEDNAVEK) {
+			          					vlakno.interrupt();
+			          				}
 			          			}
-			          			if (prislaObjednavka == true) {
-		          					zpracujOb.zpracujObjednavky();
-		          					prislaObjednavka = false;
-		          				}
+			          			
 			          }
 			        }
 			      )
 			    );
 			    timeline.setCycleCount(Animation.INDEFINITE);
 			    timeline.play();
+			    
 			    mojeVlakno = new Vlakno();
 			    mojeVlakno.setMainController(this);
-				vlakno = new Thread(mojeVlakno);
+			    vlakno = new Thread(mojeVlakno);
 			    vlakno.start();
-			    zpracujOb = new ZpracujObjednavky((int)(time/1000), Model.getInstance().objednavkyList);
+			    
+			    zpracujOb = new ZpracujObjednavky((int)(time/1000), Model.getInstance().nezpracovaneObjednavky);
 			    zpracujOb.setMainController(this);
                 zpracujOb.zpracujObjednavky();
+			    
+                timeline2 = new Timeline(
+      			      new KeyFrame(Duration.seconds(5), 
+      			    		 new EventHandler<ActionEvent>() {
+      			          		@Override 
+      			          		public void handle(ActionEvent actionEvent) {
+      			          			if (beziSimulace) {
+				                	
+					                	for (int i = 0; i < dorucovaneObjednavky.size(); i++) {
+					                		if ((dorucovaneObjednavky.get(i).getCasDoruceni() * 1000) < time) {
+					                			for (Label objText: nedoruceneObjLbl) {
+					                				if (objText.getId().equals(String.valueOf(dorucovaneObjednavky.get(i).getCisloObjednavky()))) {
+					                					objText.setStyle("-fx-background-color: #ccffcc");
+					                				}
+					                			}
+					                			dorucovaneObjednavky.remove(dorucovaneObjednavky.get(i));
+					                		}
+					                	}
+      			          			}
+    			          			
+      				          }
+      				        }
+      				      )
+      				    );
+                timeline2.setCycleCount(Animation.INDEFINITE);
+			    timeline2.play();
 	}
 	
 	@FXML
 	public void pozastavitSimulaci() {
 		if (beziSimulace) {
 			timeline.pause();
+			timeline2.pause();
 			vlakno.interrupt();
 			casPozastaveni += System.currentTimeMillis();
 			beziSimulace = false;
@@ -360,6 +323,7 @@ public class MainController implements Initializable {
 		}
 		else {
 			timeline.play();
+			timeline2.play();
 			mojeVlakno = new Vlakno();
 			mojeVlakno.setMainController(this);
 			vlakno = new Thread(mojeVlakno);
@@ -379,6 +343,7 @@ public class MainController implements Initializable {
 		beziSimulace = false; 
 		vlakno.interrupt();
 		timeline.stop();
+		timeline2.stop();
 		poSpusteni = false;
 		vypisTA.appendText("Simulace ukonèena.\n\n");
 		vypisTA.appendText(zpracujOb.stavNakladaku((int)(time/1000), false, 1));
@@ -391,7 +356,7 @@ public class MainController implements Initializable {
 		spustitMI.setDisable(false);
 		casPozastaveni = 0;
 		casSpusteni = 0;
-		Model.getInstance().objednavkyList.clear();
+		Model.getInstance().nezpracovaneObjednavky.clear();
 		timeLbl.setText(setTime(0));
 		seznamObjednavek.getChildren().clear();
 		paletCB.getSelectionModel().clearSelection();
@@ -416,7 +381,7 @@ public class MainController implements Initializable {
 			
 			if (result.get() == btn1){
 				Objednavka novaObj = new Objednavka(Integer.parseInt(objednavkaTF.getText()), (int)paletCB.getValue(), setTime(time));
-				Model.getInstance().objednavkyList.add(novaObj);
+				Model.getInstance().nezpracovaneObjednavky.add(novaObj);
 				prislaObjednavka = true;
 				mesto.setDnesObjednano(true);
 				if (!poSpusteni) {
@@ -427,7 +392,7 @@ public class MainController implements Initializable {
 		}
 		else {
 			Objednavka novaObj = new Objednavka(Integer.parseInt(objednavkaTF.getText()), (int)paletCB.getValue(), setTime(time));
-			Model.getInstance().objednavkyList.add(novaObj);
+			Model.getInstance().nezpracovaneObjednavky.add(novaObj);
 			prislaObjednavka = true;
 			mesto.setDnesObjednano(true);
 			if (!poSpusteni) {
@@ -461,7 +426,7 @@ public class MainController implements Initializable {
 			int maxPalet = Model.getInstance().mesta.get(mesto - 1).getMaxPalet();
 			palet = 1 + rng.nextInt(maxPalet);
 			Objednavka novaObj = new Objednavka(mesto, palet, setTime(time));
-			Model.getInstance().objednavkyList.add(novaObj);
+			Model.getInstance().nezpracovaneObjednavky.add(novaObj);
 			if (!poSpusteni) {
 				pridejObjednavku(novaObj, poSpusteni);
 			}
@@ -492,8 +457,10 @@ public class MainController implements Initializable {
 	public void pridejObjednavku(Objednavka novaObj, boolean poSpusteni) {
 		Label textObj = new Label(novaObj.strucnyPopis());
 		textObj.setPadding(new Insets(3));
-		textObj.setStyle("-fx-border-color: BLACK");
+		textObj.setStyle("-fx-border-color: BLACK;");
+		textObj.setId(String.valueOf(novaObj.getCisloObjednavky()));
 		textObj.setMinSize(150, 80);
+		nedoruceneObjLbl.add(textObj);
 		if (poSpusteni) {
 			textObj.setCursor(Cursor.HAND);
 			textObj.setOnMouseClicked(e -> {	
@@ -557,8 +524,11 @@ public class MainController implements Initializable {
 	/** Ukonèí aplikaci */
 	@FXML
 	public void ukoncitAplikaci() {
-		timeline.stop();
-		vlakno.interrupt();
+		if (beziSimulace) {
+			timeline.stop();
+			vlakno.interrupt();
+		}
+		
 		Platform.exit();
 	}
 	

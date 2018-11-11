@@ -23,7 +23,9 @@ public class Model {
 	
 	public int[][] nejrychlejsiCesty;
 	/** Seznam nezpracovanych objednavek */
-	public ArrayList<Objednavka> objednavkyList;
+	public ArrayList<Objednavka> nezpracovaneObjednavky;
+	/** Seznam dorucovanych objednavek */
+	public ArrayList<Objednavka> dorucovaneObjednavky;
 	/** Vrati instanci modelu */
 	public static Model getInstance() {
 		return instance;
