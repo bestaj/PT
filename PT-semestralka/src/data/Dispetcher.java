@@ -5,7 +5,7 @@ import java.util.Random;
 public class Dispetcher {
 	
 	private static final int MIN_RANGE_KOEFICIENT = 36;
-	private static final int MAX_RANGE_KOEFICIENT =72;
+	private static final int MAX_RANGE_KOEFICIENT = 72;
 	public Random r = new Random();
 	private int [][] nejkratsicesta;
 	private int [][] nejrychlejsicesta;

@@ -51,11 +51,17 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
+/** 
+ * Trida {@code MainController} se stara o vetsinu 
+ * funkcionality uzivatelskeho rozhrani
+ * 
+ * @author Jiri Besta, Olesya Dutchuk
+ *
+ */
 public class MainController implements Initializable {
 	
 	@FXML
@@ -80,34 +86,51 @@ public class MainController implements Initializable {
 	public static final Image pauseImg = new Image("/gui/icons/pause.png");
 	public static final Image stopImg = new Image("/gui/icons/stop.png");
 	
+	/** Cas kdy konci simulace v milisekundach (20:30) */
 	private final long KONEC_DNE = 73800000;
+	/** Cas kdy konci chodit objednavky (16:00) */
 	private final long KONEC_OBJEDNAVEK = 57600000;
+	/** Cas kdy zacina simulace (8:00) */
 	private final long CAS = 28800000;
-	public Random rng = new Random();
+	/** Velke cislo predstavujici nekonecnou vzdalenost mezi mesty */
 	private final int INF = 9999;
-	/** Aktualni simulacni cas */
+	/** Aktualni cas */
 	private long time;
 	/** Cas spusteni simulace */
 	private long startTime;
 	/** Cas pozastaveni simulace */
 	private long casPozastaveni;
+	/** Cas opetovneho spusteni simulace */
 	private long casSpusteni;
 	
 	private Thread vlakno;
 	private Vlakno mojeVlakno;
 	
-	/** Casovac pro simulaci */
+	/** 
+	 * Hlavni casovac pro beh simulace
+	 * vypisuje aktualni cas
+	 * stara se ukonceni prichodu novych objednavek 
+	 * a o ukonceni simulace ve 20:30 
+	 */
 	private Timeline timeline;
+	/** 
+	 * Casovac, ktery kontroluje rozvazene objednavky, 
+	 * dorucene objednavky oznaci zelene
+	 */
 	private Timeline timeline2;
-	
+	/** Seznam prave dorucovanych objednavek */
 	private ArrayList<Objednavka> dorucovaneObjednavky;
+	/** Seznam popisku jednotlivych objednavek */
 	private ArrayList<Label> nedoruceneObjLbl;
+	// Detekuje, zda bezi simulace
 	private boolean beziSimulace = false;
 	private boolean poSpusteni = false;
+	// Indikuje prichod nove objednavky
 	private boolean prislaObjednavka = false;
+	// pro preventivni ocislovani objednavek, jeste pred spustenim simulace
 	private int pomCisloObj = 1;
-	public ZpracujObjednavky zpracujOb;
-	
+	private ZpracujObjednavky zpracujOb;
+	private Random rng = new Random();
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -132,11 +155,16 @@ public class MainController implements Initializable {
 		dorucovaneObjednavky = Model.getInstance().dorucovaneObjednavky;
 		nedoruceneObjLbl = new ArrayList<>();
 		inicializaceGUI();
-		time = CAS;
+		time = CAS; // Cas simulace nastavit na pocatek (8:00)
 		Main.window.setOnCloseRequest(confirmCloseEventHandler);
-		
 	}
 
+	/**
+	 * Provede nacteni vstupnich dat
+	 * Pocet mest
+	 * Kolik palet muze maximalne objednat dano mesto
+	 * Cesty mezi mesty a jejich vzdalenost
+	 */
 	public void nacteniVstupnichDat() {
 		try(Scanner sc = new Scanner(new File(VSTUP))) {
 			int pocetMest = Integer.parseInt(sc.nextLine());
@@ -168,9 +196,9 @@ public class MainController implements Initializable {
 		} catch(IOException e) {
 			System.out.println("Chyba");
 		}
-		
 	}
 	
+	/** Provede inicializaci uzivatelskeho rozhrani */
 	public void inicializaceGUI() {
 		spustitBtn.setGraphic(new ImageView(playImg));
 		pozastavitBtn.setGraphic(new ImageView(pauseImg));
@@ -181,6 +209,7 @@ public class MainController implements Initializable {
 		pozastavitBtn.setDisable(true);
 		pozastavitMI.setDisable(true);
 		
+		// Nastavi choiceBox na patricny pocet palet pro vyber, podle mesta, ktere objednava
 		objednavkaTF.setOnKeyReleased(e -> {
 			if (jeSpravnaHodnota()) {
 				int palet = Model.getInstance().mesta.get(Integer.parseInt(objednavkaTF.getText())-1).getMaxPalet();
@@ -201,9 +230,6 @@ public class MainController implements Initializable {
 		        vypisTA.setScrollTop(Double.MAX_VALUE); // vzdy po pridani do textarey, scrolovani dolu
 			}
 		});
-		
-			
-		
 	}
 	
 	/**
@@ -229,6 +255,11 @@ public class MainController implements Initializable {
 		}
 	}
 	
+	/**
+	 * Spusti simulaci
+	 * nastavi se potrebne stavove promenne
+	 * spusti se vsechny casovace
+	 */
 	@FXML
 	public void spustitSimulaci() {
 			beziSimulace = true;
@@ -254,10 +285,7 @@ public class MainController implements Initializable {
 			    		            zpracujOb.setCas((int)(time/1000));
 			          				timeLbl.setText(setTime(time));
 			          				
-			          				if (prislaObjednavka == true) {
-			          					zpracujOb.zpracujObjednavky();
-			          					prislaObjednavka = false;
-			          				}
+			          				
 			          				
 			          				if (time > KONEC_DNE) {
 			          					ukoncitSimulaci();
@@ -290,6 +318,11 @@ public class MainController implements Initializable {
       			          		public void handle(ActionEvent actionEvent) {
       			          			if (beziSimulace) {
 				                	
+	      			          			if (prislaObjednavka == true) {
+				          					zpracujOb.zpracujObjednavky();
+				          					prislaObjednavka = false;
+				          				}
+      			          				
 					                	for (int i = 0; i < dorucovaneObjednavky.size(); i++) {
 					                		if ((dorucovaneObjednavky.get(i).getCasDoruceni() * 1000) < time) {
 					                			for (Label objText: nedoruceneObjLbl) {
@@ -346,7 +379,7 @@ public class MainController implements Initializable {
 		timeline2.stop();
 		poSpusteni = false;
 		vypisTA.appendText("Simulace ukonèena.\n\n");
-		vypisTA.appendText(zpracujOb.stavNakladaku((int)(time/1000), false, 1));
+		vypisTA.appendText(zpracujOb.statistikySimulace());
 		ulozSimulaci();
 		pozastavitBtn.setDisable(true);
 		pozastavitMI.setDisable(true);
@@ -482,7 +515,7 @@ public class MainController implements Initializable {
 		TextArea textAr = new TextArea();
 		pane.setMargin(textAr, new Insets(10));
 		textAr.appendText(zpracujOb.stavObjednavky(novaObj.getCisloObjednavky(), (int)(time/1000)));
-		textAr.appendText(zpracujOb.stavNakladaku((int)(time/1000), true, novaObj.getCisloNakladaku()));
+		textAr.appendText(zpracujOb.stavNakladaku((int)(time/1000), novaObj.getCisloNakladaku()));
 		pane.setTop(lbl);
 		pane.setCenter(textAr);
 		oknoObjednavky.setScene(new Scene(pane));
@@ -507,18 +540,32 @@ public class MainController implements Initializable {
 	}
 	
 	@FXML
-	private void ukazData() {
+	private void dataZposledniSimulace() {
 		Stage noveOkno = new Stage();
 		noveOkno.setTitle("Info");
 		
 		try {
-			Parent root = FXMLLoader.load(getClass().getResource("/gui/fxml/Vypis.fxml"));
+			Parent root = FXMLLoader.load(getClass().getResource("/gui/fxml/Vypis1.fxml"));
 			noveOkno.setScene(new Scene(root));
 			noveOkno.show();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
+	}
+	
+	@FXML
+	private void celkoveStatistiky() {
+		Stage noveOkno = new Stage();
+		noveOkno.setTitle("Info");
+		
+		try {
+			Parent root = FXMLLoader.load(getClass().getResource("/gui/fxml/Vypis2.fxml"));
+			noveOkno.setScene(new Scene(root));
+			noveOkno.show();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/** Ukonèí aplikaci */

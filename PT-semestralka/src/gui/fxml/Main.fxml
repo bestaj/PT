@@ -29,7 +29,8 @@
               <MenuItem fx:id="spustitMI" mnemonicParsing="false" onAction="#spustitSimulaci" text="Spustit simulaci" />
                   <MenuItem fx:id="pozastavitMI" mnemonicParsing="false" onAction="#pozastavitSimulaci" text="Pozastavit simulaci" />
                   <MenuItem fx:id="ukoncitMI" mnemonicParsing="false" onAction="#ukoncitSimulaci" text="Ukončit simulaci" />
-                  <MenuItem mnemonicParsing="false" onAction="#ukazData" text="Data z poslední simulace" />
+                  <MenuItem mnemonicParsing="false" onAction="#dataZposledniSimulace" text="Data z poslední simulace" />
+                  <MenuItem mnemonicParsing="false" onAction="#celkoveStatistiky" text="Celkové statistiky" />
                   <Menu mnemonicParsing="false" text="Vygenerovat objednávky">
                     <items>
                       <MenuItem mnemonicParsing="false" onAction="#genObj50" text="50" />
