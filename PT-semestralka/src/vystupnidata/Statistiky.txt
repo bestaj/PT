@@ -1,0 +1,30 @@
+Den 3
+Cena palety: 700
+Pøijatých objednávek: 0
+Odmítnutých objednávek: 0
+Rozvezených palet: 0
+Ujetých km: 0
+Náklady na dopravu: 0
+Zisk: 0
+
+Den 2
+Cena palety: 500
+Pøijatých objednávek: 0
+Odmítnutých objednávek: 0
+Rozvezených palet: 0
+Ujetých km: 0
+Náklady na dopravu: 0
+Zisk: 0
+
+Den 1
+Cena palety: 300
+Pøijatých objednávek: 0
+Odmítnutých objednávek: 0
+Rozvezených palet: 0
+Ujetých km: 0
+Náklady na dopravu: 0
+Zisk: 0
+
+
+
+

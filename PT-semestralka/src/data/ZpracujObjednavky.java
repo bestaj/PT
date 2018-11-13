@@ -6,7 +6,6 @@ import java.util.HashMap;
 import data.Model;
 import data.Objednavka;
 import gui.controller.MainController;
-import sun.management.MappedMXBeanType;
 
 public class ZpracujObjednavky {
 
@@ -108,7 +107,7 @@ public class ZpracujObjednavky {
 			indexMesta = rozhodniKam(pocatek, objednavky);
 			mestaNaCeste = Model.getInstance().disp.cesta(pocatek, indexMesta, 0);
 			//kolikCasuPotreba = Model.getInstance().nejrychlejsiCesty[pocatek][indexMesta];
-			
+			kolikCasuPotreba = 0;
 			for(int i = 0; i < mestaNaCeste.size() - 1; i++) {
 				kolikCasuPotreba += (Model.getInstance().casy[mestaNaCeste.get(i)][i+1])/1000;
 			}
@@ -248,19 +247,21 @@ public class ZpracujObjednavky {
 
 				}
 			} else {
-				for (int i = 0; i < objednavky.size(); i++) {
-					stavObjednavky += "Objednávka èíslo " + cisloObjednavky + " je zamítnuta.\n\n";
+			//	for (int i = 0; i < objednavky.size(); i++) {
+			//		stavObjednavky += "Objednávka èíslo " + cisloObjednavky + " je zamítnuta.\n\n";
 					objednavky.get(aktualniIndex).setCisloObjednavky(cisloObjednavky);
-					zpracovaneObjednavky.put(cisloObjednavky, objednavky.get(aktualniIndex));
-					objednavky.remove(i);
+			//		zpracovaneObjednavky.put(cisloObjednavky, objednavky.get(aktualniIndex));
+			//		objednavky.remove(i);
+			//		mc.pridejObjednavku(objednavky.get(aktualniIndex), true);
 					if (objednavky.isEmpty()) {
 						break;
 					}
-					cisloObjednavky++;
+			//		cisloObjednavky++;
 				}
+				
 				jdiDomu = true;
 			}
-		}
+	//	}
 		return stavObjednavky;
 	}
 
@@ -310,6 +311,7 @@ public class ZpracujObjednavky {
 		int casCoZbyva = KONEC_DNE - cas;
 		while (!objednavky.isEmpty()) {
 			mc.vypisTA.appendText(zpracujObJednoAuto(casCoZbyva));
+			casCoZbyva = KONEC_DNE - cas;
 			if (pouziteNakladaky.get(cisloNakladaku) != null) {
 				celkovyPocetRozvPalet += pouziteNakladaky.get(cisloNakladaku).getRozvezPalet();
 			}

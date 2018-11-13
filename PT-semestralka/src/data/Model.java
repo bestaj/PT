@@ -12,6 +12,17 @@ public class Model {
 	public Dispetcher disp;
 	/** Celkovy pocet mest (vcetne firmy) */
 	public int pocetMest;
+	
+	public int den;
+	public int cenaPalety;
+	public int prijatychObjednavek = 0;
+	public int odmitnutychObjednavek = 0;
+	public int rozvezenychPalet = 0;
+	public int ujetychKm = 0;
+	public int nakladyNaDopravu = 0;
+	
+	
+	
 	/** Seznam mest, ktere si objednavaji palety */
 	public ArrayList<Mesto> mesta = new ArrayList<>();
 	/** Casy pro ujeti dane vzdalenosti mezi dvema mesty */
