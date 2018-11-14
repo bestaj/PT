@@ -6,7 +6,6 @@ import java.util.HashMap;
 import data.Model;
 import data.Objednavka;
 import gui.controller.MainController;
-import sun.management.MappedMXBeanType;
 
 public class ZpracujObjednavky {
 
@@ -24,8 +23,7 @@ public class ZpracujObjednavky {
 	HashMap<Integer, Objednavka> zpracovaneObjednavky;
 	HashMap<Integer, Nakladak> pouziteNakladaky;
 	private int cisloNakladaku;
-	private int celkovyPocetRozvPalet;
-	
+
 	public ZpracujObjednavky(int cas, ArrayList<Objednavka> objednavky) {
 		this.cas = cas;
 		this.objednavky = objednavky;
@@ -82,8 +80,21 @@ public class ZpracujObjednavky {
 
 	}
 
+	public boolean jedDomu(Nakladak n, int naklad, int nakladNaAuto, int odkud) {
+
+		naklad = (Model.getInstance().nejkratsiCesty[odkud][0]) * 25;
+		n.setKolikUjel(Model.getInstance().nejkratsiCesty[odkud][0]);
+		nakladNaAuto += naklad;
+		n.setNaklad(nakladNaAuto);
+		this.naklad += naklad;
+		n.setRozvezPalet(pocetPalet);
+		pouziteNakladaky.put(cisloNakladaku, n);
+		return true;
+	}
+
 	public String zpracujObJednoAuto(int casCoZbyva) {
-		int cenaZaPaletu = 2000;
+
+		int cenaZaPaletu = 3000;
 		ArrayList<Integer> mestaNaCeste = new ArrayList<>();
 		Nakladak nakladak = new Nakladak(++cisloNakladaku);
 		int casUjedeJednoAuto = 0;
@@ -94,7 +105,7 @@ public class ZpracujObjednavky {
 		int naklad = 0;
 		boolean jdiDomu = false;
 		String stavObjednavky = "";
-		int kolikCasuPotreba = 0;
+		int poradiObjedn = 1;
 		int kolikVydelame = 0;
 		int kolikUtratime = 0;
 
@@ -107,17 +118,39 @@ public class ZpracujObjednavky {
 
 			indexMesta = rozhodniKam(pocatek, objednavky);
 			mestaNaCeste = Model.getInstance().disp.cesta(pocatek, indexMesta, 0);
-			//kolikCasuPotreba = Model.getInstance().nejrychlejsiCesty[pocatek][indexMesta];
-			
-			for(int i = 0; i < mestaNaCeste.size() - 1; i++) {
-				kolikCasuPotreba += (Model.getInstance().casy[mestaNaCeste.get(i)][i+1])/1000;
+			int kolikCasuPotreba = 0;
+			for (int i = 0; i < mestaNaCeste.size() - 1; i++) {
+				kolikCasuPotreba += (Model.getInstance().casy[mestaNaCeste.get(i)][i + 1]) / 1000;
 			}
-			
+			kolikCasuPotreba += (CAS_V_JEDNEM_MESTE * potrebujemePalet);
 			kolikVydelame = potrebujemePalet * cenaZaPaletu;
 			kolikUtratime = (Model.getInstance().nejkratsiCesty[pocatek][indexMesta]) * 25;
 
-			if (prijmout(kolikCasuPotreba, casCoZbyva)) {
+			if (!prijmout(kolikCasuPotreba, casCoZbyva)) {
+				if (poradiObjedn == 1) {
+					stavObjednavky += "Objednávka èíslo " + cisloObjednavky + " je zamítnuta.\n\n";
+					Model.getInstance().odmitnutychObjednavek++;
+					objednavky.get(aktualniIndex).setCisloObjednavky(cisloObjednavky);
+					mc.pridejObjednavku(objednavky.get(aktualniIndex), true, false);
+					zpracovaneObjednavky.put(cisloObjednavky, objednavky.get(aktualniIndex));
+					objednavky.remove(aktualniIndex);
+					cisloObjednavky++;
+					if (objednavky.isEmpty()) {
+						break;
+					}
+
+					jdiDomu = true;
+
+				} else {
+					jdiDomu = jedDomu(nakladak, naklad, nakladNaJednoAuto, pocatek);
+					break;
+				}
+			} else {
 				if (pocetPalet < potrebujemePalet) {
+					if (pocetPalet == 0) {
+						jdiDomu = jedDomu(nakladak, naklad, nakladNaJednoAuto, pocatek);
+						break;
+					}
 					ArrayList<Objednavka> pomocne = new ArrayList<>();
 					for (int k = 0; k < objednavky.size(); k++) {
 						if (objednavky.get(k).getPalet() <= pocetPalet) {
@@ -127,15 +160,7 @@ public class ZpracujObjednavky {
 					}
 
 					if (pomocne.isEmpty()) {
-						naklad = (Model.getInstance().nejkratsiCesty[pocatek][0]) * 25;
-						nakladak.setKolikUjel(Model.getInstance().nejkratsiCesty[pocatek][0]);
-						nakladNaJednoAuto += naklad;
-						nakladak.setNaklad(nakladNaJednoAuto);
-						nakladak.setKolikUjelCasu(casUjedeJednoAuto);
-						this.naklad += naklad;
-						nakladak.setRozvezPalet(pocetPalet);
-						pouziteNakladaky.put(cisloNakladaku, nakladak);
-						jdiDomu = true;
+						jdiDomu = jedDomu(nakladak, naklad, nakladNaJednoAuto, pocatek);
 
 					} else {
 						indexMesta = rozhodniKam(pocatek, pomocne);
@@ -146,63 +171,44 @@ public class ZpracujObjednavky {
 						kolikUtratime = (Model.getInstance().nejkratsiCesty[pocatek][indexMesta]) * 25;
 
 						// Pokud je to posledni mesto kam pojedeme
-						if (((pocetPalet - potrebujemePalet) == 0)
-								&& ((kolikUtratime + (Model.getInstance().nejkratsiCesty[indexMesta][0]) * 25)
+						if (//((pocetPalet - potrebujemePalet) == 0)
+								 ((kolikUtratime + (Model.getInstance().nejkratsiCesty[indexMesta][0]) * 25)
 										- kolikVydelame) < (Model.getInstance().nejkratsiCesty[pocatek][0]) * 25) {
 							naklad = (Model.getInstance().nejkratsiCesty[pocatek][indexMesta]) * 25;
 							nakladak.setKolikUjel(Model.getInstance().nejkratsiCesty[pocatek][indexMesta]);
 							nakladNaJednoAuto += naklad;
 							this.naklad += naklad;
-							kolikCasuPotreba += (CAS_V_JEDNEM_MESTE * potrebujemePalet);
-							casUjedeJednoAuto += kolikCasuPotreba;
-							
 							casCoZbyva -= kolikCasuPotreba;
-							
-							
+							casUjedeJednoAuto += kolikCasuPotreba;
 							nakladak.setKolikUjelCasu(casUjedeJednoAuto + cas);
 							pocatek = indexMesta;
 							pocetPalet -= pomocne.get(this.aktualniIndex).getPalet();
 							pomocne.remove(this.aktualniIndex);
 							stavObjednavky += "Objednávka èíslo " + cisloObjednavky + " je pøijata.\n";
 							stavObjednavky += "Objednávku bude vyøizovat nákladní auto èíslo " + cisloNakladaku + ".\n";
-							stavObjednavky += "Pøedpokádaný èas doruèení je " + mc.setTime((casUjedeJednoAuto + cas) * 1000)
-									+ ".\n\n";
+							stavObjednavky += "Pøedpokádaný èas doruèení je " + mc.setTime((casUjedeJednoAuto + cas) * 1000) + ".\n\n";
+							Model.getInstance().prijatychObjednavek++;
 							nastavObj(objednavky.get((int) kandidatiNaObjednavku.get(aktualniIndex)), cisloObjednavky,
 									(casUjedeJednoAuto + cas), cisloNakladaku, true);
 							nakladak.setObjednavkyCoVeze(cisloObjednavky);
-							zpracovaneObjednavky.put(cisloObjednavky,
-									objednavky.get((int) kandidatiNaObjednavku.get(aktualniIndex)));
+							zpracovaneObjednavky.put(cisloObjednavky, objednavky.get((int) kandidatiNaObjednavku.get(aktualniIndex)));
 
-							mc.pridejObjednavku(objednavky.get((int) kandidatiNaObjednavku.get(aktualniIndex)), true);
+							mc.pridejObjednavku(objednavky.get((int) kandidatiNaObjednavku.get(aktualniIndex)), true, true);
 							Model.getInstance().dorucovaneObjednavky.add(objednavky.get(aktualniIndex));
+							Model.getInstance().rozvezenychPalet += objednavky.get(aktualniIndex).getPalet();
 							
 							objednavky.remove((int) kandidatiNaObjednavku.get(aktualniIndex));
+							poradiObjedn++;
 							cisloObjednavky++;
 							if (objednavky.isEmpty()) {
-								naklad = (Model.getInstance().nejkratsiCesty[pocatek][0]) * 25;
-								nakladak.setKolikUjel(Model.getInstance().nejkratsiCesty[pocatek][0]);
-								nakladNaJednoAuto += naklad;
-								nakladak.setNaklad(nakladNaJednoAuto);
-								this.naklad += naklad;
-								nakladak.setRozvezPalet(pocetPalet);
-								pouziteNakladaky.put(cisloNakladaku, nakladak);
+								jdiDomu = jedDomu(nakladak, naklad, nakladNaJednoAuto, pocatek);
 								break;
 							}
 
-						}else {
-							naklad = (Model.getInstance().nejkratsiCesty[pocatek][0]) * 25;
-							nakladak.setKolikUjel(Model.getInstance().nejkratsiCesty[pocatek][0]);
-							nakladNaJednoAuto += naklad;
-							nakladak.setNaklad(nakladNaJednoAuto);
-							nakladak.setKolikUjelCasu(casUjedeJednoAuto);
-							this.naklad += naklad;
-							nakladak.setRozvezPalet(pocetPalet);
-							pouziteNakladaky.put(cisloNakladaku, nakladak);
-							jdiDomu = true;
-							
-						}
-						
+						} else {
+							jdiDomu = jedDomu(nakladak, naklad, nakladNaJednoAuto, pocatek);
 
+						}
 					}
 
 				} else {
@@ -212,55 +218,37 @@ public class ZpracujObjednavky {
 					naklad = (Model.getInstance().nejkratsiCesty[pocatek][indexMesta]) * 25;
 					nakladNaJednoAuto += naklad;
 					this.naklad += naklad;
-					kolikCasuPotreba += (CAS_V_JEDNEM_MESTE * potrebujemePalet);
-					
-					
-					casCoZbyva -= kolikCasuPotreba;
-					
-					
+					// kolikCasuPotreba += (CAS_V_JEDNEM_MESTE * potrebujemePalet);
 					casUjedeJednoAuto += kolikCasuPotreba;
 					nakladak.setKolikUjelCasu(casUjedeJednoAuto + cas);
 					pocatek = indexMesta;
+					casCoZbyva -= kolikCasuPotreba;
 					pocetPalet -= objednavky.get(this.aktualniIndex).getPalet();
 					stavObjednavky += "Objednávka èíslo " + cisloObjednavky + " je pøijata.\n";
 					stavObjednavky += "Objednávku bude vyøizovat nákladní auto èíslo " + cisloNakladaku + ".\n";
 					stavObjednavky += "Pøedpokádaný èas doruèení je " + mc.setTime((casUjedeJednoAuto + cas) * 1000) + ".\n\n";
-					nastavObj(objednavky.get(aktualniIndex), cisloObjednavky, (casUjedeJednoAuto + cas), cisloNakladaku,
-							true);
+					Model.getInstance().prijatychObjednavek++;
+					nastavObj(objednavky.get(aktualniIndex), cisloObjednavky, (casUjedeJednoAuto + cas), cisloNakladaku, true);
 
-					mc.pridejObjednavku(objednavky.get(aktualniIndex), true);
+					mc.pridejObjednavku(objednavky.get(aktualniIndex), true, true);
 					Model.getInstance().dorucovaneObjednavky.add(objednavky.get(aktualniIndex));
-					
+					Model.getInstance().rozvezenychPalet += objednavky.get(aktualniIndex).getPalet();
+
 					nakladak.setObjednavkyCoVeze(cisloObjednavky);
 					zpracovaneObjednavky.put(cisloObjednavky, objednavky.get(aktualniIndex));
 					objednavky.remove(this.aktualniIndex);
+					poradiObjedn++;
 					cisloObjednavky++;
 					if (objednavky.isEmpty()) {
-						naklad = (Model.getInstance().nejkratsiCesty[pocatek][0]) * 25;
-						nakladak.setKolikUjel(Model.getInstance().nejkratsiCesty[pocatek][0]);
-						nakladNaJednoAuto += naklad;
-						nakladak.setNaklad(nakladNaJednoAuto);
-						this.naklad += naklad;
-						nakladak.setRozvezPalet(pocetPalet);
-						pouziteNakladaky.put(cisloNakladaku, nakladak);
+						jdiDomu = jedDomu(nakladak, naklad, nakladNaJednoAuto, pocatek);
 						break;
 					}
 
 				}
-			} else {
-				for (int i = 0; i < objednavky.size(); i++) {
-					stavObjednavky += "Objednávka èíslo " + cisloObjednavky + " je zamítnuta.\n\n";
-					objednavky.get(aktualniIndex).setCisloObjednavky(cisloObjednavky);
-					zpracovaneObjednavky.put(cisloObjednavky, objednavky.get(aktualniIndex));
-					objednavky.remove(i);
-					if (objednavky.isEmpty()) {
-						break;
-					}
-					cisloObjednavky++;
-				}
-				jdiDomu = true;
 			}
+
 		}
+		Model.getInstance().ujetychKm += nakladak.getKolikUjel();
 		return stavObjednavky;
 	}
 
@@ -296,7 +284,7 @@ public class ZpracujObjednavky {
 	
 	public String statistikySimulace() {
 		String vypis = "\n---------------------------------------\n";
-		vypis += "Celkem bylo použito " + pouziteNakladaky.size() + " nákladních aut.\nRozvezeno " + celkovyPocetRozvPalet
+		vypis += "Celkem bylo použito " + pouziteNakladaky.size() + " nákladních aut.\nRozvezeno " + Model.getInstance().rozvezenychPalet
 				+ " palet. \nNáklady na dopravu: " + naklad + " Kè\n";
 		return vypis;
 	}
@@ -307,12 +295,9 @@ public class ZpracujObjednavky {
 
 	public void zpracujObjednavky() {
 
-		int casCoZbyva = KONEC_DNE - cas;
 		while (!objednavky.isEmpty()) {
+			int casCoZbyva = KONEC_DNE - cas;
 			mc.vypisTA.appendText(zpracujObJednoAuto(casCoZbyva));
-			if (pouziteNakladaky.get(cisloNakladaku) != null) {
-				celkovyPocetRozvPalet += pouziteNakladaky.get(cisloNakladaku).getRozvezPalet();
-			}
 		}
 	}
 }

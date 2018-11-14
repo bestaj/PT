@@ -3,7 +3,7 @@ package gui.controller;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -11,6 +11,8 @@ import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.Scanner;
 import java.util.TimeZone;
+
+import com.sun.org.apache.bcel.internal.generic.NEW;
 
 import data.Dispetcher;
 import data.Mesto;
@@ -54,6 +56,8 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
+import jdk.nashorn.internal.ir.CatchNode;
+import jdk.nashorn.internal.ir.SetSplitState;
 
 /** 
  * Trida {@code MainController} se stara o vetsinu 
@@ -80,7 +84,8 @@ public class MainController implements Initializable {
 	private MenuItem spustitMI, pozastavitMI, ukoncitMI; 
 	
 	public static MainController mc;
-	public static final String VSTUP = "src/vstupnidata/VstupniData.txt";
+	public static final String VSTUP1 = "src/vstupnidata/VstupniData.txt";
+	public static final File VSTUP2 = new File("src/vystupnidata/Statistiky.txt");
 	public static final String VYSTUP = "src/vystupnidata/VystupniData.txt";
 	public static final Image playImg = new Image("/gui/icons/play.png");
 	public static final Image pauseImg = new Image("/gui/icons/pause.png");
@@ -166,7 +171,7 @@ public class MainController implements Initializable {
 	 * Cesty mezi mesty a jejich vzdalenost
 	 */
 	public void nacteniVstupnichDat() {
-		try(Scanner sc = new Scanner(new File(VSTUP))) {
+		try(Scanner sc = new Scanner(new File(VSTUP1))) {
 			int pocetMest = Integer.parseInt(sc.nextLine());
 			// Inicializace poctu mest vcetne firmy
 			Model.getInstance().pocetMest = pocetMest + 1; 
@@ -273,6 +278,7 @@ public class MainController implements Initializable {
 			ukoncitBtn.setDisable(false);
 			ukoncitMI.setDisable(false);
 			
+			zjistiCenuADen();
 			startTime = System.currentTimeMillis();
 			vypisTA.appendText("Simulace spuštìna.\n\n");
 			timeline = new Timeline(
@@ -381,6 +387,7 @@ public class MainController implements Initializable {
 		vypisTA.appendText("Simulace ukonèena.\n\n");
 		vypisTA.appendText(zpracujOb.statistikySimulace());
 		ulozSimulaci();
+		ulozStatistiky();
 		pozastavitBtn.setDisable(true);
 		pozastavitMI.setDisable(true);
 		ukoncitBtn.setDisable(true);
@@ -418,7 +425,7 @@ public class MainController implements Initializable {
 				prislaObjednavka = true;
 				mesto.setDnesObjednano(true);
 				if (!poSpusteni) {
-					pridejObjednavku(novaObj, poSpusteni);
+					pridejObjednavku(novaObj, poSpusteni, true);
 				}
 			}
 			
@@ -429,7 +436,7 @@ public class MainController implements Initializable {
 			prislaObjednavka = true;
 			mesto.setDnesObjednano(true);
 			if (!poSpusteni) {
-				pridejObjednavku(novaObj, poSpusteni);
+				pridejObjednavku(novaObj, poSpusteni, true);
 			}
 		}
 	}
@@ -461,7 +468,7 @@ public class MainController implements Initializable {
 			Objednavka novaObj = new Objednavka(mesto, palet, setTime(time));
 			Model.getInstance().nezpracovaneObjednavky.add(novaObj);
 			if (!poSpusteni) {
-				pridejObjednavku(novaObj, poSpusteni);
+				pridejObjednavku(novaObj, poSpusteni, true);
 			}
 		}
 		prislaObjednavka = true;
@@ -487,10 +494,15 @@ public class MainController implements Initializable {
 	 * textovou reprezentaci objednavky 
 	 * @param novaObj nova objednavka
 	 */
-	public void pridejObjednavku(Objednavka novaObj, boolean poSpusteni) {
+	public void pridejObjednavku(Objednavka novaObj, boolean poSpusteni, boolean prijata) {
 		Label textObj = new Label(novaObj.strucnyPopis());
 		textObj.setPadding(new Insets(3));
-		textObj.setStyle("-fx-border-color: BLACK;");
+		if (prijata) {
+			textObj.setStyle("-fx-border-color: BLACK");
+		}
+		else {
+			textObj.setStyle("-fx-background-color: #ffcccc");
+		}
 		textObj.setId(String.valueOf(novaObj.getCisloObjednavky()));
 		textObj.setMinSize(150, 80);
 		nedoruceneObjLbl.add(textObj);
@@ -565,6 +577,67 @@ public class MainController implements Initializable {
 			noveOkno.show();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	private void zjistiCenuADen() {
+		try(Scanner sc = new Scanner(VSTUP2)) {
+			if (!sc.hasNextLine()) {
+				Model.getInstance().den = 1;
+				Model.getInstance().cenaPalety = 300;
+				sc.close();
+			}
+			else {
+				String den = sc.nextLine();
+				String cenaPalety = sc.nextLine();
+				String[] pom1 = den.split(" ");
+				String[] pom2 = cenaPalety.split("\t");
+				pom2 = pom2[4].split(" ");
+				Model.getInstance().den = Integer.parseInt(pom1[1]) + 1;
+				Model.getInstance().cenaPalety = Integer.parseInt(pom2[0]) + 200;
+			}
+		} catch(IOException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	private void ulozStatistiky() {
+		String statistiky = "";
+		String den = "";
+		String cenaPalety = "";
+		
+		try(Scanner sc = new Scanner(VSTUP2)) {
+			if (!sc.hasNextLine()) {
+				sc.close();
+			}
+			else {
+				while(sc.hasNextLine()) {
+					statistiky += sc.nextLine() + "\n";
+				}
+				sc.close();
+			}
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+		
+		int zisk = (Model.getInstance().cenaPalety * Model.getInstance().rozvezenychPalet) - (Model.getInstance().ujetychKm * 25);
+		try(PrintWriter writer = new PrintWriter(VSTUP2)) {
+			writer.println("\t\t\t\tDen " + Model.getInstance().den);
+			writer.println("Cena palety:\t\t\t\t" + Model.getInstance().cenaPalety + " Kè");
+			writer.println("-------------------------------------------");
+			writer.println("Pøijatých objednávek:\t\t" + Model.getInstance().prijatychObjednavek);
+			writer.println("Odmítnutých objednávek:\t" + Model.getInstance().odmitnutychObjednavek);
+			writer.println("-------------------------------------------");
+			writer.println("Rozvezených palet:\t\t\t" + Model.getInstance().rozvezenychPalet);
+			writer.format("Cena za palety:\t\t\t%,d Kè\n", Model.getInstance().rozvezenychPalet * Model.getInstance().cenaPalety);
+			writer.println("Ujetých km:\t\t\t\t" + Model.getInstance().ujetychKm);
+			writer.format("Náklady na dopravu:\t\t%,d Kè\n", Model.getInstance().ujetychKm * 25);
+			writer.format("Zisk:\t\t\t\t\t\t%,d Kè\n", zisk);
+			writer.println("----------------------------------------------------------------\n");
+			writer.println(statistiky);
+			writer.close();
+		} catch (IOException ex2) {
+			ex2.printStackTrace();
 		}
 	}
 	

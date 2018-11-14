@@ -19,6 +19,7 @@ public class StatistikyController implements Initializable {
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		vypisTA.setScrollTop(Double.MAX_VALUE);
 		try(Scanner sc = new Scanner(new File(VSTUP))) {
 			while(sc.hasNextLine()) {
 				vypisTA.appendText(sc.nextLine() + "\n");
