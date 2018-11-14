@@ -17,10 +17,8 @@ public class Model {
 	public int cenaPalety;
 	public int prijatychObjednavek = 0;
 	public int odmitnutychObjednavek = 0;
-	public int rozvezenychPalet = 0;
+	public int rozvezenychPalet;
 	public int ujetychKm = 0;
-	public int nakladyNaDopravu = 0;
-	
 	
 	
 	/** Seznam mest, ktere si objednavaji palety */

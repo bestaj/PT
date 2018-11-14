@@ -69,8 +69,8 @@ public class Nakladak {
 
 	@Override
 	public String toString() {
-		return "Nákladní auto èíslo:\t\t" + cisloNakladaku + "\nDosud rozvezeno palet:\t" + rozvezPalet + "\nCelkem ujel:\t\t\t" + kolikUjelKm + " Km" 
-				+ "\nNáklady na dopravu:\t" + naklady + " Kè. \nRozvezené objednávky:\t" + objednavkyCoVeze.toString() + "\n";
+		return "Nákladní auto èíslo:\t\t\t" + cisloNakladaku + "\nPoèet palet:\t\t\t\t" + rozvezPalet + "\nUjetá vzdálenost:\t\t\t" + kolikUjelKm + " Km" 
+				+ "\nNáklady na dopravu:\t\t" + naklady + " Kè. \nDoruèované objednávky:\t\t" + objednavkyCoVeze.toString() + "\n";
 	}
 
 }

@@ -1,236 +1,29 @@
 Simulace spuštìna.
 
-Simulace pozastavena.
-Simulace pokraèuje.
-
 Objednávka èíslo 1 je pøijata.
 Objednávku bude vyøizovat nákladní auto èíslo 1.
-Pøedpokádanı èas doruèení je 08:55:58.
+Pøedpokádanı èas doruèení je 10:07:00.
 
 Objednávka èíslo 2 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 2.
-Pøedpokádanı èas doruèení je 09:28:38.
+Objednávku bude vyøizovat nákladní auto èíslo 1.
+Pøedpokádanı èas doruèení je 11:22:28.
 
 Objednávka èíslo 3 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 3.
-Pøedpokádanı èas doruèení je 08:54:58.
+Objednávku bude vyøizovat nákladní auto èíslo 2.
+Pøedpokádanı èas doruèení je 09:16:49.
 
 Objednávka èíslo 4 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 4.
-Pøedpokádanı èas doruèení je 09:00:08.
+Objednávku bude vyøizovat nákladní auto èíslo 3.
+Pøedpokádanı èas doruèení je 09:26:40.
 
 Objednávka èíslo 5 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 5.
-Pøedpokádanı èas doruèení je 08:56:28.
-
-Objednávka èíslo 6 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 6.
-Pøedpokádanı èas doruèení je 09:40:17.
-
-Objednávka èíslo 7 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 7.
-Pøedpokádanı èas doruèení je 10:06:57.
-
-Objednávka èíslo 8 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 8.
-Pøedpokádanı èas doruèení je 08:55:38.
-
-Objednávka èíslo 9 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 9.
-Pøedpokádanı èas doruèení je 10:39:37.
-
-Objednávka èíslo 10 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 10.
-Pøedpokádanı èas doruèení je 10:06:57.
-
-Objednávka èíslo 11 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 11.
-Pøedpokádanı èas doruèení je 08:59:58.
-
-Objednávka èíslo 12 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 12.
-Pøedpokádanı èas doruèení je 09:03:07.
-
-Objednávka èíslo 13 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 13.
-Pøedpokádanı èas doruèení je 10:41:27.
-
-Objednávka èíslo 14 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 14.
-Pøedpokádanı èas doruèení je 09:08:57.
-
-Objednávka èíslo 15 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 15.
-Pøedpokádanı èas doruèení je 10:09:47.
-
-Objednávka èíslo 16 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 16.
-Pøedpokádanı èas doruèení je 09:34:17.
-
-Objednávka èíslo 17 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 17.
-Pøedpokádanı èas doruèení je 09:30:47.
-
-Objednávka èíslo 18 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 18.
-Pøedpokádanı èas doruèení je 09:57:18.
-
-Objednávka èíslo 19 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 19.
-Pøedpokádanı èas doruèení je 08:52:08.
-
-Objednávka èíslo 20 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 20.
-Pøedpokádanı èas doruèení je 09:57:18.
-
-Objednávka èíslo 21 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 21.
-Pøedpokádanı èas doruèení je 09:18:46.
-
-Objednávka èíslo 22 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 22.
-Pøedpokádanı èas doruèení je 09:11:27.
-
-Objednávka èíslo 23 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 23.
-Pøedpokádanı èas doruèení je 09:57:18.
-
-Objednávka èíslo 24 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 24.
-Pøedpokádanı èas doruèení je 10:31:22.
-
-Objednávka èíslo 25 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 25.
-Pøedpokádanı èas doruèení je 09:27:28.
-
-Objednávka èíslo 26 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 26.
-Pøedpokádanı èas doruèení je 09:06:37.
-
-Objednávka èíslo 27 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 27.
-Pøedpokádanı èas doruèení je 10:02:58.
-
-Objednávka èíslo 28 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 28.
-Pøedpokádanı èas doruèení je 09:10:07.
-
-Objednávka èíslo 29 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 29.
-Pøedpokádanı èas doruèení je 09:09:37.
-
-Objednávka èíslo 30 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 30.
-Pøedpokádanı èas doruèení je 09:38:37.
-
-Objednávka èíslo 31 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 31.
-Pøedpokádanı èas doruèení je 09:17:26.
-
-Objednávka èíslo 32 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 32.
-Pøedpokádanı èas doruèení je 10:11:27.
-
-Objednávka èíslo 33 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 33.
-Pøedpokádanı èas doruèení je 08:54:08.
-
-Objednávka èíslo 34 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 34.
-Pøedpokádanı èas doruèení je 09:10:46.
-
-Objednávka èíslo 35 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 35.
-Pøedpokádanı èas doruèení je 10:25:08.
-
-Objednávka èíslo 36 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 36.
-Pøedpokádanı èas doruèení je 11:45:06.
-
-Objednávka èíslo 37 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 37.
-Pøedpokádanı èas doruèení je 09:39:07.
-
-Objednávka èíslo 38 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 38.
-Pøedpokádanı èas doruèení je 09:10:17.
-
-Objednávka èíslo 39 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 39.
-Pøedpokádanı èas doruèení je 10:57:28.
-
-Objednávka èíslo 40 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 40.
-Pøedpokádanı èas doruèení je 10:43:06.
-
-Objednávka èíslo 41 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 41.
-Pøedpokádanı èas doruèení je 08:57:28.
-
-Objednávka èíslo 42 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 42.
-Pøedpokádanı èas doruèení je 08:57:38.
-
-Objednávka èíslo 43 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 43.
-Pøedpokádanı èas doruèení je 10:56:58.
-
-Objednávka èíslo 44 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 44.
-Pøedpokádanı èas doruèení je 09:37:57.
-
-Objednávka èíslo 45 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 45.
-Pøedpokádanı èas doruèení je 11:22:08.
-
-Objednávka èíslo 46 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 46.
-Pøedpokádanı èas doruèení je 09:35:27.
-
-Objednávka èíslo 47 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 47.
-Pøedpokádanı èas doruèení je 08:56:38.
-
-Objednávka èíslo 48 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 48.
-Pøedpokádanı èas doruèení je 09:35:27.
-
-Objednávka èíslo 49 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 49.
-Pøedpokádanı èas doruèení je 08:53:08.
-
-Objednávka èíslo 50 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 50.
-Pøedpokádanı èas doruèení je 10:09:57.
-
-Objednávka èíslo 51 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 51.
-Pøedpokádanı èas doruèení je 08:57:18.
-
-Objednávka èíslo 52 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 52.
-Pøedpokádanı èas doruèení je 09:47:46.
-
-Objednávka èíslo 53 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 53.
-Pøedpokádanı èas doruèení je 09:27:48.
-
-Objednávka èíslo 54 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 54.
-Pøedpokádanı èas doruèení je 09:12:36.
-
-Objednávka èíslo 55 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 55.
-Pøedpokádanı èas doruèení je 10:00:47.
-
-Objednávka èíslo 56 je pøijata.
-Objednávku bude vyøizovat nákladní auto èíslo 56.
-Pøedpokádanı èas doruèení je 09:30:48.
+Objednávku bude vyøizovat nákladní auto èíslo 4.
+Pøedpokádanı èas doruèení je 11:24:20.
 
 Simulace ukonèena.
 
 
 ---------------------------------------
-Celkem bylo pouito 1 nákladních aut.
-Rozvezeno 2 palet. 
-Náklady na dopravu: 223775 Kè
+Celkem bylo pouito 4 nákladních aut.
+Rozvezeno 12 palet. 
+Náklady na dopravu: 43525 Kè

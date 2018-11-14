@@ -57,6 +57,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import jdk.nashorn.internal.ir.CatchNode;
+import jdk.nashorn.internal.ir.SetSplitState;
 
 /** 
  * Trida {@code MainController} se stara o vetsinu 
@@ -424,7 +425,7 @@ public class MainController implements Initializable {
 				prislaObjednavka = true;
 				mesto.setDnesObjednano(true);
 				if (!poSpusteni) {
-					pridejObjednavku(novaObj, poSpusteni);
+					pridejObjednavku(novaObj, poSpusteni, true);
 				}
 			}
 			
@@ -435,7 +436,7 @@ public class MainController implements Initializable {
 			prislaObjednavka = true;
 			mesto.setDnesObjednano(true);
 			if (!poSpusteni) {
-				pridejObjednavku(novaObj, poSpusteni);
+				pridejObjednavku(novaObj, poSpusteni, true);
 			}
 		}
 	}
@@ -467,7 +468,7 @@ public class MainController implements Initializable {
 			Objednavka novaObj = new Objednavka(mesto, palet, setTime(time));
 			Model.getInstance().nezpracovaneObjednavky.add(novaObj);
 			if (!poSpusteni) {
-				pridejObjednavku(novaObj, poSpusteni);
+				pridejObjednavku(novaObj, poSpusteni, true);
 			}
 		}
 		prislaObjednavka = true;
@@ -493,10 +494,15 @@ public class MainController implements Initializable {
 	 * textovou reprezentaci objednavky 
 	 * @param novaObj nova objednavka
 	 */
-	public void pridejObjednavku(Objednavka novaObj, boolean poSpusteni) {
+	public void pridejObjednavku(Objednavka novaObj, boolean poSpusteni, boolean prijata) {
 		Label textObj = new Label(novaObj.strucnyPopis());
 		textObj.setPadding(new Insets(3));
-		textObj.setStyle("-fx-border-color: BLACK;");
+		if (prijata) {
+			textObj.setStyle("-fx-border-color: BLACK");
+		}
+		else {
+			textObj.setStyle("-fx-background-color: #ffcccc");
+		}
 		textObj.setId(String.valueOf(novaObj.getCisloObjednavky()));
 		textObj.setMinSize(150, 80);
 		nedoruceneObjLbl.add(textObj);
@@ -584,10 +590,11 @@ public class MainController implements Initializable {
 			else {
 				String den = sc.nextLine();
 				String cenaPalety = sc.nextLine();
-				
-				String[] pom = cenaPalety.split(" ");
-				Model.getInstance().cenaPalety = Integer.parseInt(pom[2]) + 200;
-				Model.getInstance().den = Integer.parseInt(String.valueOf(den.charAt(4))) + 1;
+				String[] pom1 = den.split(" ");
+				String[] pom2 = cenaPalety.split("\t");
+				pom2 = pom2[4].split(" ");
+				Model.getInstance().den = Integer.parseInt(pom1[1]) + 1;
+				Model.getInstance().cenaPalety = Integer.parseInt(pom2[0]) + 200;
 			}
 		} catch(IOException ex) {
 			ex.printStackTrace();
@@ -615,14 +622,18 @@ public class MainController implements Initializable {
 		
 		int zisk = (Model.getInstance().cenaPalety * Model.getInstance().rozvezenychPalet) - (Model.getInstance().ujetychKm * 25);
 		try(PrintWriter writer = new PrintWriter(VSTUP2)) {
-			writer.println("Den " + Model.getInstance().den);
-			writer.println("Cena palety: " + Model.getInstance().cenaPalety);
-			writer.println("Pøijatých objednávek: " + Model.getInstance().prijatychObjednavek);
-			writer.println("Odmítnutých objednávek: " + Model.getInstance().odmitnutychObjednavek);
-			writer.println("Rozvezených palet: " + Model.getInstance().rozvezenychPalet);
-			writer.println("Ujetých km: " + Model.getInstance().ujetychKm);
-			writer.println("Náklady na dopravu: " + Model.getInstance().nakladyNaDopravu);
-			writer.println("Zisk: " + zisk + "\n");
+			writer.println("\t\t\t\tDen " + Model.getInstance().den);
+			writer.println("Cena palety:\t\t\t\t" + Model.getInstance().cenaPalety + " Kè");
+			writer.println("-------------------------------------------");
+			writer.println("Pøijatých objednávek:\t\t" + Model.getInstance().prijatychObjednavek);
+			writer.println("Odmítnutých objednávek:\t" + Model.getInstance().odmitnutychObjednavek);
+			writer.println("-------------------------------------------");
+			writer.println("Rozvezených palet:\t\t\t" + Model.getInstance().rozvezenychPalet);
+			writer.format("Cena za palety:\t\t\t%,d Kè\n", Model.getInstance().rozvezenychPalet * Model.getInstance().cenaPalety);
+			writer.println("Ujetých km:\t\t\t\t" + Model.getInstance().ujetychKm);
+			writer.format("Náklady na dopravu:\t\t%,d Kè\n", Model.getInstance().ujetychKm * 25);
+			writer.format("Zisk:\t\t\t\t\t\t%,d Kè\n", zisk);
+			writer.println("----------------------------------------------------------------\n");
 			writer.println(statistiky);
 			writer.close();
 		} catch (IOException ex2) {
