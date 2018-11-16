@@ -12,8 +12,6 @@ import java.util.ResourceBundle;
 import java.util.Scanner;
 import java.util.TimeZone;
 
-import com.sun.org.apache.bcel.internal.generic.NEW;
-
 import data.Dispetcher;
 import data.Mesto;
 import data.Model;
@@ -56,15 +54,12 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
-import jdk.nashorn.internal.ir.CatchNode;
-import jdk.nashorn.internal.ir.SetSplitState;
 
 /** 
- * Trida {@code MainController} se stara o vetsinu 
- * funkcionality uzivatelskeho rozhrani
+ * Tøída {@code MainController} reprezentující kontrolér,
+ * který se stará o funkcionality hlavního okna uživatelského rozhraní.
  * 
- * @author Jiri Besta, Olesya Dutchuk
- *
+ * @author Jiøí Bešta, Olesya Dutchuk
  */
 public class MainController implements Initializable {
 	
@@ -84,59 +79,69 @@ public class MainController implements Initializable {
 	private MenuItem spustitMI, pozastavitMI, ukoncitMI; 
 	
 	public static MainController mc;
+	/** Cesta k souboru se vstupními daty. */
 	public static final String VSTUP1 = "src/vstupnidata/VstupniData.txt";
+	/** Soubor s celkovými statistikami. */
 	public static final File VSTUP2 = new File("src/vystupnidata/Statistiky.txt");
+	/** Cesta k souboru se záznamem poslední simulace. */
 	public static final String VYSTUP = "src/vystupnidata/VystupniData.txt";
+	
+	// Naètení ikon
 	public static final Image playImg = new Image("/gui/icons/play.png");
 	public static final Image pauseImg = new Image("/gui/icons/pause.png");
 	public static final Image stopImg = new Image("/gui/icons/stop.png");
 	
-	/** Cas kdy konci simulace v milisekundach (20:30) */
+	/** Èas, kdy konèí simulace. (20:30) */
 	private final long KONEC_DNE = 73800000;
-	/** Cas kdy konci chodit objednavky (16:00) */
+	/** Èas, kdy konèí chodit objednávky. (16:00) */
 	private final long KONEC_OBJEDNAVEK = 57600000;
-	/** Cas kdy zacina simulace (8:00) */
+	/** Èas, kdy zaèíná simulace. (8:00) */
 	private final long CAS = 28800000;
-	/** Velke cislo predstavujici nekonecnou vzdalenost mezi mesty */
+	/** Velké èislo pro neexistenci cesty mezi dvìma mìsty */
 	private final int INF = 9999;
-	/** Aktualni cas */
+	/** Aktuální èas */
 	private long time;
-	/** Cas spusteni simulace */
+	/** Èas spuštìní simulace */
 	private long startTime;
-	/** Cas pozastaveni simulace */
+	/** Èas pozastavení simulace */
 	private long casPozastaveni;
-	/** Cas opetovneho spusteni simulace */
+	/** Èas opìtovného spuštìní simulace */
 	private long casSpusteni;
 	
+	// Druhé vlákno pro generování objednávek
 	private Thread vlakno;
 	private Vlakno mojeVlakno;
 	
-	/** 
-	 * Hlavni casovac pro beh simulace
-	 * vypisuje aktualni cas
-	 * stara se ukonceni prichodu novych objednavek 
-	 * a o ukonceni simulace ve 20:30 
+	/** Hlavni èasovaè pro bìh simulace
+	 * Vypisuje aktuálnÍ èas a stará se o ukonèení pøíchodu nových objednávek 
+	 * a o ukonèení simulace ve 20:30. 
 	 */
 	private Timeline timeline;
-	/** 
-	 * Casovac, ktery kontroluje rozvazene objednavky, 
-	 * dorucene objednavky oznaci zelene
+	/** Èasovaè, který kontroluje rozvážené objednávky. 
+	 * Doruèené objednávky jsou oznaèené zeleným pozadím.
 	 */
 	private Timeline timeline2;
-	/** Seznam prave dorucovanych objednavek */
+	/** Seznam právì doruèovaných objednávek */
 	private ArrayList<Objednavka> dorucovaneObjednavky;
-	/** Seznam popisku jednotlivych objednavek */
+	/** Seznam popiskù jednotlivých objednávek 
+	 * Každý popisek má pøidìleno id, podle èísla objednávky.
+	 */
 	private ArrayList<Label> nedoruceneObjLbl;
-	// Detekuje, zda bezi simulace
+	// Detekuje, zda bìží simulace.
 	private boolean beziSimulace = false;
+	// Detekuje, zda už byla simulace spuštìna.
 	private boolean poSpusteni = false;
-	// Indikuje prichod nove objednavky
+	// Indikuje pøíchod nové objednávky.
 	private boolean prislaObjednavka = false;
-	// pro preventivni ocislovani objednavek, jeste pred spustenim simulace
+	// Pro preventivní oèíslování objedáavek, ještì pøed spuštìním simulace
 	private int pomCisloObj = 1;
 	private ZpracujObjednavky zpracujOb;
 	private Random rng = new Random();
 	
+	/** Provede se pøi vytvoøení hlavního okna. Nastaví se všechny potøebné instance, stavové promìnné  
+	 * a zavolají se metody pro naètení vstupních dat {@link nacteniVstupnichDat},
+	 * inicializace uživatelského rozhraní {@link inicializaceGUI}.
+	 */
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		mc = new MainController();
@@ -155,26 +160,27 @@ public class MainController implements Initializable {
 		
 		Model.getInstance().nejkratsiCesty = Model.getInstance().disp.floydAlg(vzd, 0); 
 		Model.getInstance().nejrychlejsiCesty = Model.getInstance().disp.floydAlg(cas, 1); 
+		
 		Model.getInstance().nezpracovaneObjednavky = new ArrayList<>();
 		Model.getInstance().dorucovaneObjednavky = new ArrayList<>();
-		dorucovaneObjednavky = Model.getInstance().dorucovaneObjednavky;
+		this.dorucovaneObjednavky = Model.getInstance().dorucovaneObjednavky;
 		nedoruceneObjLbl = new ArrayList<>();
 		inicializaceGUI();
-		time = CAS; // Cas simulace nastavit na pocatek (8:00)
+		time = CAS; 
 		Main.window.setOnCloseRequest(confirmCloseEventHandler);
 	}
 
-	/**
-	 * Provede nacteni vstupnich dat
-	 * Pocet mest
-	 * Kolik palet muze maximalne objednat dano mesto
-	 * Cesty mezi mesty a jejich vzdalenost
+	/** Provede naètení vstupních dat ze souboru. 
+	 * - poèet mìst
+	 * - kolik palet mùže maximálnì objednat dané mìsto
+	 * - cesty mezi mìsty a jejich vzdálenost
 	 */
 	public void nacteniVstupnichDat() {
 		try(Scanner sc = new Scanner(new File(VSTUP1))) {
 			int pocetMest = Integer.parseInt(sc.nextLine());
-			// Inicializace poctu mest vcetne firmy
+			// Inicializace poètu mìst, vèetnì naší firmy
 			Model.getInstance().pocetMest = pocetMest + 1; 
+			// Inicializace matice pro vzdálenosti mezi mìsty
 			Model.getInstance().vzdalenosti = new int[pocetMest+1][pocetMest+1];
 			for (int i = 0; i < pocetMest + 1; i++) {
 				for (int j = 0; j < pocetMest + 1; j++) {
@@ -186,13 +192,13 @@ public class MainController implements Initializable {
 					}
 				}
 			}
-			
+			// Naètení seznamu mìst s maximálním množstvím objednávaných palet
 			for (int i = 0; i < pocetMest; i++) {
 				String mesta = sc.nextLine();
 				String[] prvky = mesta.split(" ");
 				Model.getInstance().mesta.add(new Mesto(Integer.parseInt(prvky[0]), Integer.parseInt(prvky[1])));
 			}
-			
+			// Naètení jednotlivých cest mezi mìsty a jejich vzdáleností
 			while (sc.hasNextLine()) {
 				String radka = sc.nextLine();
 				String[] prvky = radka.split(" ");
@@ -203,7 +209,7 @@ public class MainController implements Initializable {
 		}
 	}
 	
-	/** Provede inicializaci uzivatelskeho rozhrani */
+	/** Provede inicializaci uživatelského rozhraní. */
 	public void inicializaceGUI() {
 		spustitBtn.setGraphic(new ImageView(playImg));
 		pozastavitBtn.setGraphic(new ImageView(pauseImg));
@@ -214,7 +220,7 @@ public class MainController implements Initializable {
 		pozastavitBtn.setDisable(true);
 		pozastavitMI.setDisable(true);
 		
-		// Nastavi choiceBox na patricny pocet palet pro vyber, podle mesta, ktere objednava
+		// Nastaví choiceBox na patøièný poèet palet pro výbìr, podle mìsta, které objednává.
 		objednavkaTF.setOnKeyReleased(e -> {
 			if (jeSpravnaHodnota()) {
 				int palet = Model.getInstance().mesta.get(Integer.parseInt(objednavkaTF.getText())-1).getMaxPalet();
@@ -225,22 +231,20 @@ public class MainController implements Initializable {
 				paletCB.setItems(items);
 				paletCB.setValue(items.get(palet-1));
 				pridatBtn.setDisable(false);
-			}
-			
+			}	
 		});	
 		timeLbl.setText(setTime(CAS));
 		vypisTA.textProperty().addListener(new ChangeListener<Object>() {
 			@Override
 		    public void changed(ObservableValue<?> observable, Object oldValue, Object newValue) {
-		        vypisTA.setScrollTop(Double.MAX_VALUE); // vzdy po pridani do textarey, scrolovani dolu
+		        vypisTA.setScrollTop(Double.MAX_VALUE); // Vždy po pøidání nové objednávky do textarey, scrollování dolù
 			}
 		});
 	}
 	
-	/**
-	 * Testuje zda je ve stringu cislo
-	 * a jestli je v intervalu od 1 do poctu mest
-	 * @return true, pokud je zadane cislo od 1 do pocetMest a false, pokud ne
+	/** Testuje, zda je ve stringu èíslo
+	 * a jestli je v intervalu od 1 do poètu mìst.
+	 * @return true, pokud je zadané èíslo od 1 do pocetMest a false, pokud ne
 	 */
 	public boolean jeSpravnaHodnota() {
 		try {
@@ -260,95 +264,93 @@ public class MainController implements Initializable {
 		}
 	}
 	
-	/**
-	 * Spusti simulaci
-	 * nastavi se potrebne stavove promenne
-	 * spusti se vsechny casovace
+	/** Spustí simulaci.
+	 * Nastaví se potøebné stavové promìnné.
 	 */
 	@FXML
 	public void spustitSimulaci() {
-			beziSimulace = true;
-			poSpusteni = true;
-			seznamObjednavek.getChildren().clear();
-			vypisTA.clear();
-			spustitBtn.setDisable(true);
-			spustitMI.setDisable(true);
-			pozastavitBtn.setDisable(false);
-			pozastavitMI.setDisable(false);
-			ukoncitBtn.setDisable(false);
-			ukoncitMI.setDisable(false);
-			
-			zjistiCenuADen();
-			startTime = System.currentTimeMillis();
-			vypisTA.appendText("Simulace spuštìna.\n\n");
-			timeline = new Timeline(
-			      new KeyFrame(Duration.seconds(1.0/6.0), 
-			    		 new EventHandler<ActionEvent>() {
-			          		@Override 
-			          		public void handle(ActionEvent actionEvent) {
-			          			if (beziSimulace) {
-			          				time = (CAS + ((System.currentTimeMillis() - startTime) - (casSpusteni - casPozastaveni)) * 120);
-			    		            zpracujOb.setCas((int)(time/1000));
-			          				timeLbl.setText(setTime(time));
-			          				
-			          				
-			          				
-			          				if (time > KONEC_DNE) {
-			          					ukoncitSimulaci();
+		beziSimulace = true;
+		poSpusteni = true;
+		seznamObjednavek.getChildren().clear();
+		vypisTA.clear();
+		spustitBtn.setDisable(true);
+		spustitMI.setDisable(true);
+		pozastavitBtn.setDisable(false);
+		pozastavitMI.setDisable(false);
+		ukoncitBtn.setDisable(false);
+		ukoncitMI.setDisable(false);
+		
+		zjistiCenuADen();
+		startTime = System.currentTimeMillis();
+		vypisTA.appendText("Simulace spuštìna.\n\n");
+		timeline = new Timeline(
+		      new KeyFrame(Duration.seconds(1.0/6.0), 
+		    		 new EventHandler<ActionEvent>() {
+		          		@Override 
+		          		public void handle(ActionEvent actionEvent) {
+		          			if (beziSimulace) {
+		          				time = (CAS + ((System.currentTimeMillis() - startTime) - (casSpusteni - casPozastaveni)) * 120);
+		    		            zpracujOb.setCas((int)(time/1000));
+		          				timeLbl.setText(setTime(time));
+		          				
+		          				
+		          				
+		          				if (time > KONEC_DNE) {
+		          					ukoncitSimulaci();
+		          				}
+		          				if (time > 	KONEC_OBJEDNAVEK) {
+		          					vlakno.interrupt();
+		          				}
+		          			}
+		          			
+		          }
+		        }
+		      )
+		    );
+		    timeline.setCycleCount(Animation.INDEFINITE);
+		    timeline.play();
+		    
+		    mojeVlakno = new Vlakno();
+		    mojeVlakno.setMainController(this);
+		    vlakno = new Thread(mojeVlakno);
+		    vlakno.start();
+		    
+		    zpracujOb = new ZpracujObjednavky((int)(time/1000), Model.getInstance().nezpracovaneObjednavky);
+		    zpracujOb.setMainController(this);
+            zpracujOb.zpracujObjednavky();
+		    
+            timeline2 = new Timeline(
+  			      new KeyFrame(Duration.seconds(5), 
+  			    		 new EventHandler<ActionEvent>() {
+  			          		@Override 
+  			          		public void handle(ActionEvent actionEvent) {
+  			          			if (beziSimulace) {
+			                	
+      			          			if (prislaObjednavka == true) {
+			          					zpracujOb.zpracujObjednavky();
+			          					prislaObjednavka = false;
 			          				}
-			          				if (time > 	KONEC_OBJEDNAVEK) {
-			          					vlakno.interrupt();
-			          				}
-			          			}
-			          			
-			          }
-			        }
-			      )
-			    );
-			    timeline.setCycleCount(Animation.INDEFINITE);
-			    timeline.play();
-			    
-			    mojeVlakno = new Vlakno();
-			    mojeVlakno.setMainController(this);
-			    vlakno = new Thread(mojeVlakno);
-			    vlakno.start();
-			    
-			    zpracujOb = new ZpracujObjednavky((int)(time/1000), Model.getInstance().nezpracovaneObjednavky);
-			    zpracujOb.setMainController(this);
-                zpracujOb.zpracujObjednavky();
-			    
-                timeline2 = new Timeline(
-      			      new KeyFrame(Duration.seconds(5), 
-      			    		 new EventHandler<ActionEvent>() {
-      			          		@Override 
-      			          		public void handle(ActionEvent actionEvent) {
-      			          			if (beziSimulace) {
-				                	
-	      			          			if (prislaObjednavka == true) {
-				          					zpracujOb.zpracujObjednavky();
-				          					prislaObjednavka = false;
-				          				}
-      			          				
-					                	for (int i = 0; i < dorucovaneObjednavky.size(); i++) {
-					                		if ((dorucovaneObjednavky.get(i).getCasDoruceni() * 1000) < time) {
-					                			for (Label objText: nedoruceneObjLbl) {
-					                				if (objText.getId().equals(String.valueOf(dorucovaneObjednavky.get(i).getCisloObjednavky()))) {
-					                					objText.setStyle("-fx-background-color: #ccffcc");
-					                				}
-					                			}
-					                			dorucovaneObjednavky.remove(dorucovaneObjednavky.get(i));
-					                		}
-					                	}
-      			          			}
-    			          			
-      				          }
-      				        }
-      				      )
-      				    );
-                timeline2.setCycleCount(Animation.INDEFINITE);
-			    timeline2.play();
+  			          				
+				                	for (int i = 0; i < dorucovaneObjednavky.size(); i++) {
+				                		if ((dorucovaneObjednavky.get(i).getCasDoruceni() * 1000) < time) {
+				                			for (Label objText: nedoruceneObjLbl) {
+				                				if (objText.getId().equals(String.valueOf(dorucovaneObjednavky.get(i).getCisloObjednavky()))) {
+				                					objText.setStyle("-fx-background-color: #ccffcc");
+				                				}
+				                			}
+				                			dorucovaneObjednavky.remove(dorucovaneObjednavky.get(i));
+				                		}
+				                	}
+  			          			}	
+  				          }
+  				        }
+  				      )
+  				    );
+            timeline2.setCycleCount(Animation.INDEFINITE);
+		    timeline2.play();
 	}
 	
+	/** Pozastaví simulaci */
 	@FXML
 	public void pozastavitSimulaci() {
 		if (beziSimulace) {
@@ -374,9 +376,7 @@ public class MainController implements Initializable {
 		
 	}
 	
-	/**
-	 * Ukonèí prùbìh simulace
-	 */
+	/** Ukonèí simulaci */
 	@FXML
 	public void ukoncitSimulaci() {
 		beziSimulace = false; 
@@ -403,6 +403,7 @@ public class MainController implements Initializable {
 		objednavkaTF.clear();
 	}
 	
+	/** Pøidá novou objednávku do seznamu objednávek. */
 	@FXML
 	public void pridatObjednavku() {
 		Mesto mesto = Model.getInstance().mesta.get(Integer.parseInt(objednavkaTF.getText()) - 1);
@@ -441,21 +442,27 @@ public class MainController implements Initializable {
 		}
 	}
 	
+	/** Vygeneruje 50 náhodných objednávek */
 	@FXML
 	public void genObj50() {
 		generujObjednavky(50);
 	}
 	
+	/** Vygeneruje 150 náhodných objednávek */
 	@FXML
 	public void genObj150() {
 		generujObjednavky(150);
 	}
 	
+	/** Vygeneruje 300 náhodných objednávek */
 	@FXML
 	public void genObj300() {
 		generujObjednavky(300);
 	}
 	
+	/** Vygeneruje daný poèet náhodných objednávek 
+	 * @param pocet, poèet generovaných objednávek 
+	 */
 	public void generujObjednavky(int pocet) {
 		int mesto;
 		int palet;
@@ -474,9 +481,9 @@ public class MainController implements Initializable {
 		prislaObjednavka = true;
 	}
 	
-	/** Vrati retezec casu
-	 * @param millis cas, ktery se ma prevest (v milisekundach)
-	 * @return cas ve formatu hh:mm:ss
+	/** Vrátí èas ve formátu hh:mm:ss
+	 * @param millis èas, který se má pøevést (v milisekundách)
+	 * @return èas ve formátu hh:mm:ss
 	 */
 	public String setTime(long millis) {
 		if (millis == 0) {
@@ -487,12 +494,11 @@ public class MainController implements Initializable {
 	    int minute = (int)((sec / 60) % 60);
 	    int hour = (int)(sec / 3600);
 	    return String.format("%tT", millis-TimeZone.getDefault().getRawOffset());
-		
 	}
     
-	/** Do panulo objednavek prida novou 
-	 * textovou reprezentaci objednavky 
-	 * @param novaObj nova objednavka
+	/** Do panulu objednávek pøidá novou 
+	 * textovou reprezentaci objednávky 
+	 * @param novaObj pøidávaná objednávka
 	 */
 	public void pridejObjednavku(Objednavka novaObj, boolean poSpusteni, boolean prijata) {
 		Label textObj = new Label(novaObj.strucnyPopis());
@@ -506,7 +512,7 @@ public class MainController implements Initializable {
 		textObj.setId(String.valueOf(novaObj.getCisloObjednavky()));
 		textObj.setMinSize(150, 80);
 		nedoruceneObjLbl.add(textObj);
-		if (poSpusteni) {
+		if (poSpusteni && novaObj.isPrijato()) {
 			textObj.setCursor(Cursor.HAND);
 			textObj.setOnMouseClicked(e -> {	
 				vytvorOknoObjednavky(novaObj);
@@ -515,6 +521,9 @@ public class MainController implements Initializable {
 		seznamObjednavek.getChildren().add(0, textObj);
 	}
 	
+	/** Otevøe okno pro vybranou objednávku
+	 * @param novaObj, vybraná objednávka
+	 */
 	private void vytvorOknoObjednavky(Objednavka novaObj) {
 		Stage oknoObjednavky = new Stage();
 		oknoObjednavky.setTitle("Výpis");
@@ -532,11 +541,10 @@ public class MainController implements Initializable {
 		pane.setCenter(textAr);
 		oknoObjednavky.setScene(new Scene(pane));
 		oknoObjednavky.show();
-		
 	}
 	
 	
-	/** Ulozi prubeh cele simulace do souboru */
+	/** Uloží prùbìh celé simulace do souboru. */
 	private void ulozSimulaci() {
 		try (FileWriter vystup = new FileWriter(new File(VYSTUP))) {
 	        vystup.write(vypisTA.getText());
@@ -551,6 +559,9 @@ public class MainController implements Initializable {
         }
 	}
 	
+	/** Zobrazí nové okno, ve kterém je vypsán prùbìh 
+	 * naposledy spuštìné simulace. 
+	 */
 	@FXML
 	private void dataZposledniSimulace() {
 		Stage noveOkno = new Stage();
@@ -566,6 +577,9 @@ public class MainController implements Initializable {
 		
 	}
 	
+	/** Zobrazí nové okno, ve kterém jsou vypsány
+	 * statistiky z pøedchozích simulací. 
+	 */
 	@FXML
 	private void celkoveStatistiky() {
 		Stage noveOkno = new Stage();
@@ -580,6 +594,9 @@ public class MainController implements Initializable {
 		}
 	}
 	
+	/** Zjistí, jaká byla cena palety pøi poslední simulaci
+	 * a také èíslo simulace.
+	 */
 	private void zjistiCenuADen() {
 		try(Scanner sc = new Scanner(VSTUP2)) {
 			if (!sc.hasNextLine()) {
@@ -601,6 +618,7 @@ public class MainController implements Initializable {
 		}
 	}
 	
+	/** Uloží statistiky právì probìhlé simulace. */
 	private void ulozStatistiky() {
 		String statistiky = "";
 		String den = "";
