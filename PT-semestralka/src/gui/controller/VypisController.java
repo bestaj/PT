@@ -1,8 +1,6 @@
 package gui.controller;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -11,10 +9,16 @@ import java.util.Scanner;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
-import jdk.nashorn.internal.ir.CatchNode;
 
+/**
+ * Tøída {@code VypisController} reprezentující kontrolér,
+ * který se stará o funkcionalitu okna pro výpis naposledy probìhlé simulace.
+ * 
+ * @author Jiøí Bešta, Olesya Dutchuk
+ */
 public class VypisController implements Initializable {
 
+	/** Cesta k souboru, ve kterém jsou uloženy data z poslední simulace */
 	public static final String VSTUP = "src/vystupnidata/VystupniData.txt";
 	
 	@FXML
@@ -28,8 +32,6 @@ public class VypisController implements Initializable {
 			}
 		} catch (IOException ex) {
 			ex.printStackTrace();
-		}
-		
+		}	
 	}
-
 }

@@ -10,8 +10,15 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
 
+/**
+ * Tøída {@code StatistikyController} reprezentuje kontrolér,
+ * který se stará o funkcionalitu okna se statistikami simulací.
+ * 
+ * @author Jiøí Bešta, Olesya Dutchuk
+ */
 public class StatistikyController implements Initializable {
 
+	/** Cesta k souboru, ve kterém jsou uloženy statistiky probìhlých simulací. */
 	public static final String VSTUP = "src/vystupnidata/Statistiky.txt";
 
 	@FXML
@@ -27,7 +34,5 @@ public class StatistikyController implements Initializable {
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
-		
 	}
-
 }

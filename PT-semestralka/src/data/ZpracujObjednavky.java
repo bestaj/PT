@@ -131,6 +131,7 @@ public class ZpracujObjednavky {
 					stavObjednavky += "Objednávka èíslo " + cisloObjednavky + " je zamítnuta.\n\n";
 					Model.getInstance().odmitnutychObjednavek++;
 					objednavky.get(aktualniIndex).setCisloObjednavky(cisloObjednavky);
+					objednavky.get(aktualniIndex).setPrijato(false);
 					mc.pridejObjednavku(objednavky.get(aktualniIndex), true, false);
 					zpracovaneObjednavky.put(cisloObjednavky, objednavky.get(aktualniIndex));
 					objednavky.remove(aktualniIndex);
@@ -284,8 +285,11 @@ public class ZpracujObjednavky {
 	
 	public String statistikySimulace() {
 		String vypis = "\n---------------------------------------\n";
-		vypis += "Celkem bylo použito " + pouziteNakladaky.size() + " nákladních aut.\nRozvezeno " + Model.getInstance().rozvezenychPalet
-				+ " palet. \nNáklady na dopravu: " + naklad + " Kè\n";
+		vypis += "Pøijatých objednávek: " + Model.getInstance().prijatychObjednavek + "\nOdmítnutých objednávek: " + Model.getInstance().odmitnutychObjednavek +
+				"\nCelkem bylo použito " + pouziteNakladaky.size() + " nákladních aut.\nUjetá vzdálenost: " + Model.getInstance().ujetychKm + 
+				"Km\nNáklady na dopravu: " + (Model.getInstance().ujetychKm * 25) + "Kè\nRozvezeno " + Model.getInstance().rozvezenychPalet	+ " palet." + 
+				"\nCena za palety: " + Model.getInstance().rozvezenychPalet * Model.getInstance().cenaPalety + "Kè\nZisk: " + 
+				((Model.getInstance().cenaPalety * Model.getInstance().rozvezenychPalet) - (Model.getInstance().ujetychKm * 25)) + "Kè"; 
 		return vypis;
 	}
 

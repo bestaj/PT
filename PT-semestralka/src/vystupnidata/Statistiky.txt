@@ -1,3 +1,107 @@
+				Den 15
+Cena palety:				3100 Kè
+-------------------------------------------
+Pøijatých objednávek:		110
+Odmítnutých objednávek:	0
+-------------------------------------------
+Rozvezených palet:			254
+Cena za palety:			787 400 Kè
+Ujetých km:				10150
+Náklady na dopravu:		253 750 Kè
+Zisk:						533 650 Kè
+----------------------------------------------------------------
+
+				Den 14
+Cena palety:				2900 Kè
+-------------------------------------------
+Pøijatých objednávek:		338
+Odmítnutých objednávek:	0
+-------------------------------------------
+Rozvezených palet:			853
+Cena za palety:			2 473 700 Kè
+Ujetých km:				33605
+Náklady na dopravu:		840 125 Kè
+Zisk:						1 633 575 Kè
+----------------------------------------------------------------
+
+				Den 13
+Cena palety:				2700 Kè
+-------------------------------------------
+Pøijatých objednávek:		30
+Odmítnutých objednávek:	0
+-------------------------------------------
+Rozvezených palet:			70
+Cena za palety:			189 000 Kè
+Ujetých km:				3460
+Náklady na dopravu:		86 500 Kè
+Zisk:						102 500 Kè
+----------------------------------------------------------------
+
+				Den 12
+Cena palety:				2500 Kè
+-------------------------------------------
+Pøijatých objednávek:		63
+Odmítnutých objednávek:	0
+-------------------------------------------
+Rozvezených palet:			126
+Cena za palety:			315 000 Kè
+Ujetých km:				5258
+Náklady na dopravu:		131 450 Kè
+Zisk:						183 550 Kè
+----------------------------------------------------------------
+
+				Den 11
+Cena palety:				2300 Kè
+-------------------------------------------
+Pøijatých objednávek:		218
+Odmítnutých objednávek:	3
+-------------------------------------------
+Rozvezených palet:			512
+Cena za palety:			1 177 600 Kè
+Ujetých km:				23643
+Náklady na dopravu:		591 075 Kè
+Zisk:						586 525 Kè
+----------------------------------------------------------------
+
+				Den 10
+Cena palety:				2100 Kè
+-------------------------------------------
+Pøijatých objednávek:		201
+Odmítnutých objednávek:	3
+-------------------------------------------
+Rozvezených palet:			469
+Cena za palety:			984 900 Kè
+Ujetých km:				21566
+Náklady na dopravu:		539 150 Kè
+Zisk:						445 750 Kè
+----------------------------------------------------------------
+
+				Den 9
+Cena palety:				1900 Kè
+-------------------------------------------
+Pøijatých objednávek:		158
+Odmítnutých objednávek:	0
+-------------------------------------------
+Rozvezených palet:			347
+Cena za palety:			659 300 Kè
+Ujetých km:				15513
+Náklady na dopravu:		387 825 Kè
+Zisk:						271 475 Kè
+----------------------------------------------------------------
+
+				Den 8
+Cena palety:				1700 Kè
+-------------------------------------------
+Pøijatých objednávek:		15
+Odmítnutých objednávek:	0
+-------------------------------------------
+Rozvezených palet:			34
+Cena za palety:			57 800 Kè
+Ujetých km:				1527
+Náklady na dopravu:			38 175 Kè
+Zisk:					19 625 Kè
+----------------------------------------------------------------
+
 				Den 7
 Cena palety:				1500 Kè
 -------------------------------------
@@ -79,6 +183,14 @@ Cena za palety:			113 100 Kè
 Ujetých km:				17272
 Náklady na dopravu:		431 800 Kè
 Zisk:						-318 700 Kè
+
+
+
+
+
+
+
+
 
 
 
