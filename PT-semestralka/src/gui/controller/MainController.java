@@ -365,10 +365,12 @@ public class MainController implements Initializable {
 		else {
 			timeline.play();
 			timeline2.play();
-			mojeVlakno = new Vlakno();
-			mojeVlakno.setMainController(this);
-			vlakno = new Thread(mojeVlakno);
-			vlakno.start();
+			if (time < 	KONEC_OBJEDNAVEK) {
+				mojeVlakno = new Vlakno();
+				mojeVlakno.setMainController(this);
+				vlakno = new Thread(mojeVlakno);
+				vlakno.start();
+			}
 			casSpusteni += System.currentTimeMillis();
 			beziSimulace = true;
 			vypisTA.appendText("Simulace pokraèuje.\n\n");

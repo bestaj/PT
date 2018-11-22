@@ -82,11 +82,11 @@ public class ZpracujObjednavky {
 
 	public boolean jedDomu(Nakladak n, int naklad, int nakladNaAuto, int odkud) {
 
-		naklad = (Model.getInstance().nejkratsiCesty[odkud][0]) * 25;
+		int naklad2 = (Model.getInstance().nejkratsiCesty[odkud][0]) * 25;
 		n.setKolikUjel(Model.getInstance().nejkratsiCesty[odkud][0]);
-		nakladNaAuto += naklad;
+		nakladNaAuto += naklad2;
 		n.setNaklad(nakladNaAuto);
-		this.naklad += naklad;
+		this.naklad += naklad2;
 		n.setRozvezPalet(pocetPalet);
 		pouziteNakladaky.put(cisloNakladaku, n);
 		return true;
