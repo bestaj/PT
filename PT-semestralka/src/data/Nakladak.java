@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /**
  * Tøída {@code Nakladak} reprezentující nákladní auto.
  * 
- * @author Jiøí Bešta
+ * @author Jiøí Bešta, Olesya Dutchuk
  */
 public class Nakladak {
 	/** Poèet palet kolik veze dané nákladní auto */
