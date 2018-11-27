@@ -11,11 +11,11 @@ public class Objednavka {
 	/** Èas, kdy zaèíná simulace. (8:00) */
 	private final long CAS = 28800000;
 	/** Mìsto, které si objednalo palety */
-	private int mesto;
+	private final int MESTO;
 	/** Poèet palet, kolik si dané mìsto objednalo */
-	private int palet;
+	private final int PALET;
 	/** Èas, kdy pøišla objednávka */
-	private String casObjednavky;
+	private final String CAS_OBJ;
 	/** Zda je objednávka pøijata nebo není */
 	private boolean prijato;
 	/** Èíslo objednávky */
@@ -34,9 +34,9 @@ public class Objednavka {
 	 * @param casObjednavky èas, kdy pøišla objednávka
 	 */
 	public Objednavka(int mesto, int palet, String casObjednavky) {
-		this.mesto = mesto;
-		this.palet = palet;
-		this.casObjednavky = casObjednavky;
+		this.MESTO = mesto;
+		this.PALET = palet;
+		this.CAS_OBJ = casObjednavky;
 	}
 
 	/** Vrátí èíslo objednávky.
@@ -85,21 +85,21 @@ public class Objednavka {
 	* @return mesto mìsto, které si objednávalo
 	*/
 	public int getMesto() {
-		return mesto;
+		return MESTO;
 	}
 
 	/** Vrátí poèet palet. 
 	 * @return palet poèet palet, které si dané mìsto objednalo
 	 */
 	public int getPalet() {
-		return palet;
+		return PALET;
 	}
 
 	/** Vrátí èas, kdy pøišla objednávka.	
 	 * @return casObjednavky èas, kdy pøišla objednávka
 	 */
 	public String getCasObjednavky() {
-		return casObjednavky;
+		return CAS_OBJ;
 	}
 	
 	/** Vrátí èíslo nákladního auta, které doruèuje danou objednávku.
@@ -124,10 +124,6 @@ public class Objednavka {
 		if (millis == 0) {
 			setTime(CAS);
 		}
-		long sec = millis/1000;
-	    long second = sec % 60;
-	    int minute = (int)((sec / 60) % 60);
-	    int hour = (int)(sec / 3600);
 	    return String.format("%tT", millis-TimeZone.getDefault().getRawOffset());
 	}
 	
@@ -148,6 +144,6 @@ public class Objednavka {
 	 * @return struèný popis objednávky
 	 */
 	public String strucnyPopis() {
-		return "Objednávka èíslo " + cisloObjednavky + "\nMìsto: " + mesto + " Palet: " + palet + "\nÈas objednávky: " + casObjednavky;
+		return "Objednávka èíslo " + cisloObjednavky + "\nMìsto: " + MESTO + " Palet: " + PALET + "\nÈas objednávky: " + CAS_OBJ;
 	}
 }
