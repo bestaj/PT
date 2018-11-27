@@ -9,7 +9,7 @@ public class Mesto {
 	/** Èíslo mìsta */
 	private final int ID;
 	/** Maximální poèet palet, které mùže dané mìsto objednat */
-	private int maxPalet;
+	private final int MAX_PALET;
 	/** Indikuje, zda dané mìsto už v jeden den objednávalo. */
 	private boolean dnesObjednano;
 	
@@ -21,7 +21,7 @@ public class Mesto {
 	 */
 	public Mesto(int id, int maxPalet) {
 		this.ID = id;
-		this.maxPalet = maxPalet;
+		this.MAX_PALET = maxPalet;
 		this.dnesObjednano = false;
 	}
 	
@@ -29,7 +29,7 @@ public class Mesto {
 	 * @return maxPalet maximální poèet palet
 	 */
 	public int getMaxPalet() {
-		return this.maxPalet;
+		return this.MAX_PALET;
 	}
 	
 	/** Vrátí, zda dané mìsto již dnes objednávalo.

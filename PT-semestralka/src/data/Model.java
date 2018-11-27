@@ -1,6 +1,7 @@
 package data;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Tøída {@code Model} pøedstavuje model aplikace,
@@ -29,7 +30,7 @@ public class Model {
 	/** Celkový poèet ujetých kilometrù v jeden den */
 	public int ujetychKm = 0;
 	/** Seznam mìst, které si objednávají palety */
-	public ArrayList<Mesto> mesta = new ArrayList<>();
+	public List<Mesto> mesta = new ArrayList<>();
 	/** Èasy pro ujetí dané vzdálenosti mezi dvìma mìsty */
 	public int[][] casy;
 	/** Vzdálenosti mezi dvìma mesty */
@@ -39,9 +40,9 @@ public class Model {
 	/** Matice, ve které jsou uloženy nejrychlejší cesty mezi jednotlivými mìsty. */
 	public int[][] nejrychlejsiCesty;
 	/** Seznam nezpracovaných objednávek */
-	public ArrayList<Objednavka> nezpracovaneObjednavky;
+	public List<Objednavka> nezpracovaneObjednavky;
 	/** Seznam doruèovaných objednávek */
-	public ArrayList<Objednavka> dorucovaneObjednavky;
+	public List<Objednavka> dorucovaneObjednavky;
 	/** Vrátí instanci modelu */
 	public static Model getInstance() {
 		return INSTANCE;

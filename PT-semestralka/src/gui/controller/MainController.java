@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.ResourceBundle;
@@ -122,21 +123,19 @@ public class MainController implements Initializable {
 	 */
 	private Timeline timeline2;
 	/** Seznam právì doruèovaných objednávek */
-	private ArrayList<Objednavka> dorucovaneObjednavky;
+	private List<Objednavka> dorucovaneObjednavky;
 	/** Seznam popiskù jednotlivých objednávek 
 	 * Každý popisek má pøidìleno id, podle èísla objednávky.
 	 */
-	private ArrayList<Label> nedoruceneObjLbl;
+	private List<Label> nedoruceneObjLbl;
 	// Detekuje, zda bìží simulace.
 	private boolean beziSimulace = false;
 	// Detekuje, zda už byla simulace spuštìna.
 	private boolean poSpusteni = false;
 	// Indikuje pøíchod nové objednávky.
 	private boolean prislaObjednavka = false;
-	// Pro preventivní oèíslování objedáavek, ještì pøed spuštìním simulace
-	private int pomCisloObj = 1;
 	private ZpracujObjednavky zpracujOb;
-	private Random rng = new Random();
+	private final Random rng = new Random();
 	
 	/** Provede se pøi vytvoøení hlavního okna. Nastaví se všechny potøebné instance, stavové promìnné  
 	 * a zavolají se metody pro naètení vstupních dat {@link nacteniVstupnichDat},
@@ -326,7 +325,7 @@ public class MainController implements Initializable {
   			          		public void handle(ActionEvent actionEvent) {
   			          			if (beziSimulace) {
 			                	
-      			          			if (prislaObjednavka == true) {
+      			          			if (prislaObjednavka) {
 			          					zpracujOb.zpracujObjednavky();
 			          					prislaObjednavka = false;
 			          				}
@@ -398,8 +397,14 @@ public class MainController implements Initializable {
 		spustitMI.setDisable(false);
 		casPozastaveni = 0;
 		casSpusteni = 0;
+		time = CAS;
 		Model.getInstance().nezpracovaneObjednavky.clear();
+		Model.getInstance().odmitnutychObjednavek = 0;
+		Model.getInstance().prijatychObjednavek = 0;
+		Model.getInstance().ujetychKm = 0;
+		Model.getInstance().rozvezenychPalet = 0;
 		timeLbl.setText(setTime(0));
+		nedoruceneObjLbl.clear();
 		seznamObjednavek.getChildren().clear();
 		paletCB.getSelectionModel().clearSelection();
 		objednavkaTF.clear();
@@ -491,10 +496,6 @@ public class MainController implements Initializable {
 		if (millis == 0) {
 			setTime(CAS);
 		}
-		long sec = millis/1000;
-	    long second = sec % 60;
-	    int minute = (int)((sec / 60) % 60);
-	    int hour = (int)(sec / 3600);
 	    return String.format("%tT", millis-TimeZone.getDefault().getRawOffset());
 	}
     
@@ -603,7 +604,7 @@ public class MainController implements Initializable {
 		try(Scanner sc = new Scanner(VSTUP2)) {
 			if (!sc.hasNextLine()) {
 				Model.getInstance().den = 1;
-				Model.getInstance().cenaPalety = 300;
+				Model.getInstance().cenaPalety = 3000;
 				sc.close();
 			}
 			else {
@@ -613,7 +614,7 @@ public class MainController implements Initializable {
 				String[] pom2 = cenaPalety.split("\t");
 				pom2 = pom2[4].split(" ");
 				Model.getInstance().den = Integer.parseInt(pom1[1]) + 1;
-				Model.getInstance().cenaPalety = Integer.parseInt(pom2[0]) + 200;
+				Model.getInstance().cenaPalety = 3000; //Integer.parseInt(pom2[0]) + 300;
 			}
 		} catch(IOException ex) {
 			ex.printStackTrace();
@@ -623,8 +624,6 @@ public class MainController implements Initializable {
 	/** Uloží statistiky právì probìhlé simulace. */
 	private void ulozStatistiky() {
 		String statistiky = "";
-		String den = "";
-		String cenaPalety = "";
 		
 		try(Scanner sc = new Scanner(VSTUP2)) {
 			if (!sc.hasNextLine()) {

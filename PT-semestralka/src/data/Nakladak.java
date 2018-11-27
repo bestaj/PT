@@ -1,6 +1,7 @@
 package data;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Tøída {@code Nakladak} reprezentující nákladní auto.
@@ -15,18 +16,18 @@ public class Nakladak {
 	/** Celkový èas strávený na cestách */
 	private int kolikUjelCasu;
 	/** Èíslo nákladního auta */
-	private int cisloNakladaku;
+	private final int CISLO_NAKLADAKU;
 	/** Náklady na dopravu daného nákladního auta */
 	private int naklady;
 	/** Seznam objednávek, které dané nákladního auto rozváží */
-	private ArrayList<Integer> objednavkyCoVeze;
+	private List<Integer> objednavkyCoVeze;
 
 	/** Vytvoøí nové nákladní auto s pøidìleným èíslem.
 	 * 
 	 * @param cisloNakladaku oznaèení nákladního auta
 	 */
 	public Nakladak(int cisloNakladaku) {
-		this.cisloNakladaku = cisloNakladaku;
+		this.CISLO_NAKLADAKU = cisloNakladaku;
 		objednavkyCoVeze = new ArrayList<>();
 	}
 
@@ -74,8 +75,8 @@ public class Nakladak {
 	 * @param rozvezPalet poèet rozvážených palet
 	 */
 	public void setRozvezPalet(int rozvezPalet) {
-		rozvezPalet = 6 - rozvezPalet;
-		this.rozvezPalet = rozvezPalet;
+		int pocetPalet = 6 - rozvezPalet;
+		this.rozvezPalet = pocetPalet;
 	}
 
 	/** Vrátí poèet najetých kilometrù.
@@ -89,20 +90,20 @@ public class Nakladak {
 	 * @param kolikUjel množství ujetých kilometrù
 	 */
 	public void setKolikUjel(int kolikUjel) {
-		this.kolikUjelKm += kolikUjel;
+		this.kolikUjelKm = kolikUjel;
 	}
 
 	/** Vrátí èíslo nákladního auta.
 	 * @return cisloNakladaku èíslo nákladního auta
 	 */
 	public int getCisloNakladaku() {
-		return cisloNakladaku;
+		return CISLO_NAKLADAKU;
 	}
 
 	/** Vrátí seznam rozvážených objednávek.
 	 * @return objednavkyCoVeze seznam doruèovaných objednávek
 	 */
-	public ArrayList<Integer> getObjednavkyCoVeze() {
+	public List<Integer> getObjednavkyCoVeze() {
 		return objednavkyCoVeze;
 	}
 
@@ -116,7 +117,7 @@ public class Nakladak {
 	/** Textová reprezentace nákladního auta */
 	@Override
 	public String toString() {
-		return "Nákladní auto èíslo:\t\t\t" + cisloNakladaku + "\nPoèet palet:\t\t\t\t" + rozvezPalet + "\nUjetá vzdálenost:\t\t\t" + kolikUjelKm + " Km" 
+		return "Nákladní auto èíslo:\t\t\t" + CISLO_NAKLADAKU + "\nPoèet palet:\t\t\t\t" + rozvezPalet + "\nUjetá vzdálenost:\t\t\t" + kolikUjelKm + " Km" 
 				+ "\nNáklady na dopravu:\t\t" + naklady + " Kè. \nDoruèované objednávky:\t\t" + objednavkyCoVeze.toString() + "\n";
 	}
 }
